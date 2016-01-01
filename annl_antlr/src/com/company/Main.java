@@ -33,7 +33,9 @@ public class Main {
         ParseTree tree = parser.program();
         System.out.println(tree.toStringTree(parser));
         CMMListener listener = new CMMListener();
-        walker.walk(listener, tree);
+        CMMVisitor loader = new CMMVisitor();
+        loader.visit(tree);
+//        walker.walk(listener, tree);
 
 //        tree.toStringTree(parser)
 //        System.out.println("Syntax Error(s): "+parser.getNumberOfSyntaxErrors());
