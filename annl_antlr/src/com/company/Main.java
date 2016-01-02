@@ -19,7 +19,7 @@ public class Main {
 	// write your code here
         InputStream input1 = null;
         try {
-            input1 = new FileInputStream("/Users/bohaohan/iss/编译原理/解释器/测试脚本/error2_array2.cmm");
+            input1 = new FileInputStream("/Users/bohaohan/IdeaProjects/CMM/antlr_interpreter/annl_antlr/测试脚本/error2_array2.cmm");
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
