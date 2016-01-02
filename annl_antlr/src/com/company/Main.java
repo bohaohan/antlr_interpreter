@@ -36,7 +36,6 @@ public class Main {
         CMMVisitor loader = new CMMVisitor();
         loader.visit(tree);
 //        walker.walk(listener, tree);
-
 //        tree.toStringTree(parser)
 //        System.out.println("Syntax Error(s): "+parser.getNumberOfSyntaxErrors());
 //        for (Token t : tokens.getTokens()) {
@@ -45,5 +44,6 @@ public class Main {
 //                    " " + lexer.getVocabulary().getSymbolicName(t.getType())+
 //                    " line "+t.getLine()+":" + t.getCharPositionInLine());
 //        }
+
     }
 }
