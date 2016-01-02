@@ -37,6 +37,16 @@ public interface HelloListener extends ParseTreeListener {
 	 */
 	void exitVarDecl(HelloParser.VarDeclContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link HelloParser#listVar}.
+	 * @param ctx the parse tree
+	 */
+	void enterListVar(HelloParser.ListVarContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HelloParser#listVar}.
+	 * @param ctx the parse tree
+	 */
+	void exitListVar(HelloParser.ListVarContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link HelloParser#stmtBlock}.
 	 * @param ctx the parse tree
 	 */
@@ -57,25 +67,99 @@ public interface HelloListener extends ParseTreeListener {
 	 */
 	void exitIfStmt(HelloParser.IfStmtContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link HelloParser#expr}.
+	 * Enter a parse tree produced by the {@code char}
+	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpr(HelloParser.ExprContext ctx);
+	void enterChar(HelloParser.CharContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link HelloParser#expr}.
+	 * Exit a parse tree produced by the {@code char}
+	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpr(HelloParser.ExprContext ctx);
+	void exitChar(HelloParser.CharContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link HelloParser#eExpr}.
+	 * Enter a parse tree produced by the {@code int}
+	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterEExpr(HelloParser.EExprContext ctx);
+	void enterInt(HelloParser.IntContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link HelloParser#eExpr}.
+	 * Exit a parse tree produced by the {@code int}
+	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitEExpr(HelloParser.EExprContext ctx);
+	void exitInt(HelloParser.IntContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code AddSub}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterAddSub(HelloParser.AddSubContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code AddSub}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitAddSub(HelloParser.AddSubContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code expValue}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpValue(HelloParser.ExpValueContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expValue}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpValue(HelloParser.ExpValueContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code parens}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterParens(HelloParser.ParensContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code parens}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitParens(HelloParser.ParensContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code double}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterDouble(HelloParser.DoubleContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code double}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitDouble(HelloParser.DoubleContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code MulDiv}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterMulDiv(HelloParser.MulDivContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code MulDiv}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitMulDiv(HelloParser.MulDivContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void enterCompare(HelloParser.CompareContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void exitCompare(HelloParser.CompareContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link HelloParser#whileStmt}.
 	 * @param ctx the parse tree
@@ -147,15 +231,29 @@ public interface HelloListener extends ParseTreeListener {
 	 */
 	void exitList_var(HelloParser.List_varContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link HelloParser#value}.
+	 * Enter a parse tree produced by the {@code valAV}
+	 * labeled alternative in {@link HelloParser#value}.
 	 * @param ctx the parse tree
 	 */
-	void enterValue(HelloParser.ValueContext ctx);
+	void enterValAV(HelloParser.ValAVContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link HelloParser#value}.
+	 * Exit a parse tree produced by the {@code valAV}
+	 * labeled alternative in {@link HelloParser#value}.
 	 * @param ctx the parse tree
 	 */
-	void exitValue(HelloParser.ValueContext ctx);
+	void exitValAV(HelloParser.ValAVContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code valID}
+	 * labeled alternative in {@link HelloParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void enterValID(HelloParser.ValIDContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code valID}
+	 * labeled alternative in {@link HelloParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void exitValID(HelloParser.ValIDContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link HelloParser#arrayValue}.
 	 * @param ctx the parse tree
@@ -166,6 +264,16 @@ public interface HelloListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArrayValue(HelloParser.ArrayValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HelloParser#bool}.
+	 * @param ctx the parse tree
+	 */
+	void enterBool(HelloParser.BoolContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HelloParser#bool}.
+	 * @param ctx the parse tree
+	 */
+	void exitBool(HelloParser.BoolContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link HelloParser#eLSE}.
 	 * @param ctx the parse tree

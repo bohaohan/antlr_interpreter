@@ -28,6 +28,12 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarDecl(HelloParser.VarDeclContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link HelloParser#listVar}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitListVar(HelloParser.ListVarContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link HelloParser#stmtBlock}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -40,17 +46,60 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfStmt(HelloParser.IfStmtContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link HelloParser#expr}.
+	 * Visit a parse tree produced by the {@code char}
+	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpr(HelloParser.ExprContext ctx);
+	T visitChar(HelloParser.CharContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link HelloParser#eExpr}.
+	 * Visit a parse tree produced by the {@code int}
+	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitEExpr(HelloParser.EExprContext ctx);
+	T visitInt(HelloParser.IntContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code AddSub}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAddSub(HelloParser.AddSubContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code expValue}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpValue(HelloParser.ExpValueContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code parens}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParens(HelloParser.ParensContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code double}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDouble(HelloParser.DoubleContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code MulDiv}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMulDiv(HelloParser.MulDivContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCompare(HelloParser.CompareContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link HelloParser#whileStmt}.
 	 * @param ctx the parse tree
@@ -94,17 +143,31 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitList_var(HelloParser.List_varContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link HelloParser#value}.
+	 * Visit a parse tree produced by the {@code valAV}
+	 * labeled alternative in {@link HelloParser#value}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitValue(HelloParser.ValueContext ctx);
+	T visitValAV(HelloParser.ValAVContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code valID}
+	 * labeled alternative in {@link HelloParser#value}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitValID(HelloParser.ValIDContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link HelloParser#arrayValue}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitArrayValue(HelloParser.ArrayValueContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link HelloParser#bool}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBool(HelloParser.BoolContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link HelloParser#eLSE}.
 	 * @param ctx the parse tree
