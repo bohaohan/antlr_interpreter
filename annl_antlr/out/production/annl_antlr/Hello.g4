@@ -36,7 +36,7 @@ expr: expr op=('*'|'/') expr # MulDiv
 | value # expValue
 | '(' expr ')' # parens
 ;
-compare: expr Relation expr;
+compare: expr (Relation expr)?;
 
 //eExpr: (INT|CHAR| bool|DOUBLE|list_var);
 
