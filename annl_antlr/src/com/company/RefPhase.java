@@ -4,6 +4,8 @@ import gen.HelloBaseListener;
 import gen.HelloParser;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
+import java.util.Stack;
+
 /**
  * Created by qm on 16/1/3.
  */
@@ -12,6 +14,7 @@ public class RefPhase extends HelloBaseListener{
     ParseTreeProperty<Scope> scopes;
     GlobalScope globals;
     Scope currentScope;
+    Stack<Symbol.Type> stack = new Stack<Symbol.Type>();
 
     public RefPhase(GlobalScope globals, ParseTreeProperty<Scope> scopes) {
         this.globals = globals;
@@ -46,16 +49,24 @@ public class RefPhase extends HelloBaseListener{
         currentScope = currentScope.getEnclosingScope();
     }
 
-//    public void enterIfStmt(HelloParser.IfStmtContext ctx) {
-//        currentScope = scopes.get(ctx);
-//    }
-//
-//    public void exitIfStmt(HelloParser.IfStmtContext ctx) {
-//        currentScope = currentScope.getEnclosingScope();
-//    }
+//    expr: expr op=('*'|'/') expr # MulDiv
+//    | expr op=('+'|'-') expr # AddSub
+//    | ('-')?INT # int
+//    | ('-')?DOUBLE # double
+//    | CHAR #char
+//    | value # expValue
+//    | '(' expr ')' # parens
+
+//    varDecl : Type (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))? Semi;
+//    listVar : Type sub_var (Comma sub_var)+ Semi;
+//    sub_var : (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?;
+
+    public void exitInt(HelloParser.IntContext ctx) {
+        stack.push();
+    }
 
     public void exitValAV(HelloParser.ValAVContext ctx) {
-        String name = ctx.getText();
+        String name = ctx.getText().substring(0, ctx.getText().indexOf("["));
         Symbol var = currentScope.resolve(name);
         if (var == null) {
             String msg;

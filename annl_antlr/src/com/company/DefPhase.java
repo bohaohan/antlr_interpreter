@@ -6,6 +6,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
+import java.util.List;
+
 /**
  * Created by qm on 16/1/2.
  */
@@ -21,6 +23,7 @@ public class DefPhase extends HelloBaseListener {
 
     public void exitVarDecl(HelloParser.VarDeclContext ctx) {
         Symbol.Type type;
+        VariableSymbol var;
         if (ctx.value().getText().contains("[")) {
             switch (ctx.start.getText()) {
                 case "real":
@@ -36,6 +39,8 @@ public class DefPhase extends HelloBaseListener {
                 default:
                     type =  Symbol.Type.INVALID;
             }
+            var = new VariableSymbol(ctx.value().getText(), type);
+            var.name = var.name.substring(0, var.name.indexOf("["));
         } else {
             switch (ctx.start.getText()) {
                 case "real":
@@ -51,46 +56,53 @@ public class DefPhase extends HelloBaseListener {
                 default:
                     type =  Symbol.Type.INVALID;
             }
+            var = new VariableSymbol(ctx.value().getText(), type);
         }
-        VariableSymbol var = new VariableSymbol(ctx.value().getText(), type);
+
         currentScope.define(var);
     }
 
     public void exitListVar(HelloParser.ListVarContext ctx) {
         Symbol.Type type;
-        if (ctx.list_var().getText().contains("[")) {
-            switch (ctx.start.getText()) {
-                case "real":
-                    type =  Symbol.Type.REAL_LIST;
-                case "char":
-                    type =  Symbol.Type.CHAR_LIST;
-                case "bool":
-                    type =  Symbol.Type.BOOL_LIST;
-                case "double":
-                    type =  Symbol.Type.DOUBLE_LIST;
-                case "int":
-                    type =  Symbol.Type.INT_LIST;
-                default:
-                    type =  Symbol.Type.INVALID;
+        List varList = ctx.sub_var();
+        VariableSymbol var;
+        for (int i=0; i<varList.size(); i++) {
+            if (((HelloParser.Sub_varContext)varList.get(i)).value().getText().contains("[")) {
+                switch (ctx.start.getText()) {
+                    case "real":
+                        type =  Symbol.Type.REAL_LIST;
+                    case "char":
+                        type =  Symbol.Type.CHAR_LIST;
+                    case "bool":
+                        type =  Symbol.Type.BOOL_LIST;
+                    case "double":
+                        type =  Symbol.Type.DOUBLE_LIST;
+                    case "int":
+                        type =  Symbol.Type.INT_LIST;
+                    default:
+                        type =  Symbol.Type.INVALID;
+                }
+                var = new VariableSymbol(((HelloParser.Sub_varContext)varList.get(i)).value().getText(), type);
+                var.name = var.name.substring(0, var.name.indexOf("["));
+            } else {
+                switch (ctx.start.getText()) {
+                    case "real":
+                        type =  Symbol.Type.REAL;
+                    case "char":
+                        type =  Symbol.Type.CHAR;
+                    case "bool":
+                        type =  Symbol.Type.BOOL;
+                    case "double":
+                        type =  Symbol.Type.DOUBLE;
+                    case "int":
+                        type =  Symbol.Type.INT;
+                    default:
+                        type =  Symbol.Type.INVALID;
+                }
+                var = new VariableSymbol(((HelloParser.Sub_varContext)varList.get(i)).value().getText(), type);
             }
-        } else {
-            switch (ctx.start.getText()) {
-                case "real":
-                    type =  Symbol.Type.REAL;
-                case "char":
-                    type =  Symbol.Type.CHAR;
-                case "bool":
-                    type =  Symbol.Type.BOOL;
-                case "double":
-                    type =  Symbol.Type.DOUBLE;
-                case "int":
-                    type =  Symbol.Type.INT;
-                default:
-                    type =  Symbol.Type.INVALID;
-            }
+            currentScope.define(var);
         }
-        VariableSymbol var = new VariableSymbol(ctx.value().getText(), type);
-        currentScope.define(var);
     }
 
     public void enterProgram(HelloParser.ProgramContext ctx) {
@@ -99,7 +111,7 @@ public class DefPhase extends HelloBaseListener {
     }
 
     public void exitProgram(HelloParser.ProgramContext ctx) {
-
+        System.out.println(globals);
     }
 
     public void enterStmtBlock(HelloParser.StmtBlockContext ctx) {
@@ -109,6 +121,7 @@ public class DefPhase extends HelloBaseListener {
 
     public void exitStmtBlock(HelloParser.StmtBlockContext ctx) {
         currentScope = currentScope.getEnclosingScope();
+        System.out.println(currentScope);
     }
 
 
@@ -119,6 +132,7 @@ public class DefPhase extends HelloBaseListener {
 
     public void exitWhileStmt(HelloParser.WhileStmtContext ctx) {
         currentScope = currentScope.getEnclosingScope();
+        System.out.println(currentScope);
     }
 
     public void enterForStmt(HelloParser.ForStmtContext ctx) {
@@ -128,6 +142,8 @@ public class DefPhase extends HelloBaseListener {
 
     public void exitForStmt(HelloParser.ForStmtContext ctx) {
         currentScope = currentScope.getEnclosingScope();
+        System.out.println(currentScope);
+
     }
 
 

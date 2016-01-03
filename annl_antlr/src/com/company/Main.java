@@ -13,7 +13,7 @@ public class Main {
 	// write your code here
         InputStream input1 = null;
         try {
-            input1 = new FileInputStream("/Users/qm/IdeaProjects/CMM/antlr_interpreter/annl_antlr/测试脚本/test.cmm");
+            input1 = new FileInputStream("/Users/qm/IdeaProjects/CMM/antlr_interpreter/annl_antlr/测试脚本/test1_变量声明.cmm");
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -29,5 +29,5 @@ public class Main {
         RefPhase ref = new RefPhase(def.globals, def.scopes);
         walker.walk(ref, tree);
 
-    }
+     }
 }
