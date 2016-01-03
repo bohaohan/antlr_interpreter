@@ -25,7 +25,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //        System.out.println(ctx.expr().size());
         String type = ctx.getChild(0).getText();
 //        System.out.println(type);
-        String id = ctx.value().getText(); // id is left-hand side of '='
+        String id = visit(ctx.value()).getId(); // id is left-hand side of '='
         String value = null;
         try {
             Variable result = visit(ctx.expr(0)); // compute value of expression on right
@@ -83,7 +83,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             }else {
                 Variable variable = new Variable();
                 variable.setValue(value);
-                variable.setType(ctx.getChild(0).getText());
+                variable.setType(type);
                 variable.setVarType("id");
                 variable.setId(id);
                 memory.put(id, variable); // store it in our memory
@@ -105,14 +105,52 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     }
     @Override
     public Variable visitAssignStmt(HelloParser.AssignStmtContext ctx) {
-        String id = ctx.value(0).getText(); // id is left-hand side of '='
-        String value = visit(ctx.expr(0)).getValue(); // compute value of expression on right
+//        String id = ctx.value(0).getText(); // id is left-hand side of '='
+        String id = visit(ctx.value(0)).getId();
+//        id = String.valueOf(Double.valueOf(id).intValue());
+        Variable value = visit(ctx.expr(0)); // compute value of expression on right
         Variable a = new Variable();
-        a.setValue(value);
+        a.setValue(value.getValue());
+        a.setType(value.getType());
+        a.setVarType(value.getVarType());
+        a.setId(id);
+
         if (!memory.containsKey(id)) System.out.println("ID not defined " + id);
         else memory.put(id, a);
 
         return a;
+    }
+    @Override
+    public Variable visitArrayValue(HelloParser.ArrayValueContext ctx) {
+        String varType = "array";
+        Variable var = new Variable();
+        var.setVarType(varType);
+        String subId = ctx.getChild(0).getText();
+        String value = visit(ctx.expr()).getValue();
+        int va = Double.valueOf(value).intValue();
+        if (va < 0) {
+            System.out.println("Out of boundry");
+        }
+        value = String.valueOf(va);
+        String id = subId + "[" + value + "]";
+        var.setId(id);
+//        System.out.println(id);
+        return var;
+    }
+    @Override
+    public Variable visitValAV(HelloParser.ValAVContext ctx) {
+        Variable var = new Variable();
+        Variable result = visit(ctx.arrayValue());
+        var.setId(result.getId());
+        var.setVarType(result.getVarType());
+//        System.out.println(var.getId());
+        return var;
+    }
+    @Override
+    public Variable visitValID(HelloParser.ValIDContext ctx) {
+        Variable var = new Variable();
+        var.setId(ctx.getText());
+        return var;
     }
     /** Double */
     @Override
@@ -170,7 +208,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     /** value */
     @Override
     public Variable visitExpValue(HelloParser.ExpValueContext ctx) {
-        String id = ctx.value().getText();
+        String id = visit(ctx.value()).getId();
+//        System.out.println(id);
         if ( memory.containsKey(id) ) {
             return memory.get(id);
         }
@@ -269,6 +308,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 bool.setValue("true");
             } else bool.setValue("false");
         } else {
+//            System.out.println(ctx.expr(0).getText());
             Variable left = visit(ctx.expr(0));
             String lt = left.getType();
 //            System.out.println(left.getType());
@@ -442,211 +482,33 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 
         return new Variable();
     }
-    //    @Override
-//    public String visitExpr(HelloParser.ExprContext ctx) {
-////        System.out.println(ctx.getChild(0).getParent().getChildCount());
-////        System.out.println(ctx.getChildCount());
-//
-//        if(ctx.getChildCount() >= 3){
-////            System.out.println(ctx.getChild(1).getText());
-//            if (ctx.getChild(0).getText().equals("-")){
-//                if (ctx.getChild(2).getText().equals("+") && !ctx.getChild(1).getText().equals("(")) {
-//                    Double a =-1 *  Double.valueOf(visit(ctx.eExpr())) + Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if (ctx.getChild(2).getText().equals("-") && !ctx.getChild(1).getText().equals("(")) {
-//                    Double a = -1 * Double.valueOf(visit(ctx.eExpr())) - Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if (ctx.getChild(2).getText().equals("*") && !ctx.getChild(1).getText().equals("(")) {
-////                System.out.println(ctx.eExpr().getText());
-////                System.out.println(ctx.expr(0).getChildCount());
-//                    Double a = -1 * Double.valueOf(visit(ctx.eExpr())) * Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if (ctx.getChild(2).getText().equals("/") && !ctx.getChild(1).getText().equals("(")) {
-//                    Double a = -1 * Double.valueOf(visit(ctx.eExpr())) / Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if (ctx.getChild(2).getText().equals("%") && !ctx.getChild(1).getText().equals("(")) {
-//                    Double a = -1 * Double.valueOf(visit(ctx.eExpr())) % Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if(ctx.getChild(1).getText().equals("(")){
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("+")) {
-//                        Double a = -1 *Double.valueOf(visit(ctx.getChild(1))) + Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("-")) {
-//                        Double a = -1 *Double.valueOf(visit(ctx.getChild(1))) - Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("*")) {
-//                        Double a = -1 *Double.valueOf(visit(ctx.getChild(1))) * Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("/")) {
-//                        Double a = -1 *Double.valueOf(visit(ctx.getChild(1))) / Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("%")) {
-//                        Double a = -1 *Double.valueOf(visit(ctx.getChild(1))) % Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    Double a = -1 *Double.valueOf(visit(ctx.getChild(2)));
-//                    return String.valueOf(a);
-//                }
-//            } else if (ctx.getChild(0).getText().equals("+")) {
-//                if (ctx.getChild(2).getText().equals("+") && !ctx.getChild(1).getText().equals("(")) {
-//                    Double a = Double.valueOf(visit(ctx.eExpr())) + Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if (ctx.getChild(2).getText().equals("-") && !ctx.getChild(1).getText().equals("(")) {
-//                    Double a = Double.valueOf(visit(ctx.eExpr())) - Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if (ctx.getChild(2).getText().equals("*") && !ctx.getChild(1).getText().equals("(")) {
-////                System.out.println(ctx.eExpr().getText());
-////                System.out.println(ctx.expr(0).getChildCount());
-//                    Double a = Double.valueOf(visit(ctx.eExpr())) * Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if (ctx.getChild(2).getText().equals("/") && !ctx.getChild(1).getText().equals("(")) {
-//                    Double a = Double.valueOf(visit(ctx.eExpr())) / Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if (ctx.getChild(2).getText().equals("%") && !ctx.getChild(1).getText().equals("(")) {
-//                    Double a = Double.valueOf(visit(ctx.eExpr())) % Double.valueOf(visit(ctx.expr(0)));
-//                    return String.valueOf(a);
-//                }
-//                if(ctx.getChild(1).getText().equals("(")){
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("+")) {
-//                        Double a = Double.valueOf(visit(ctx.getChild(1))) + Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("-")) {
-//                        Double a = Double.valueOf(visit(ctx.getChild(1))) - Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("*")) {
-//                        Double a = Double.valueOf(visit(ctx.getChild(1))) * Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("/")) {
-//                        Double a = Double.valueOf(visit(ctx.getChild(1))) / Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    if ((ctx.getChild(1).getParent().getChildCount() == ctx.getChild(4).getParent().getChildCount())
-//                            &&ctx.getChild(4).getText().equals("%")) {
-//                        Double a = Double.valueOf(visit(ctx.getChild(1))) % Double.valueOf(visit(ctx.getChild(4)));
-//                        return String.valueOf(a);
-//                    }
-//                    Double a = Double.valueOf(visit(ctx.getChild(2)));
-//                    return String.valueOf(a);
-//                }
-//            }
-//
-//            if (ctx.getChild(1).getText().equals("+")) {
-//                Double a = Double.valueOf(visit(ctx.eExpr())) + Double.valueOf(visit(ctx.expr(0)));
-//                return String.valueOf(a);
-//            }
-//            if (ctx.getChild(1).getText().equals("-")) {
-//                Double a = Double.valueOf(visit(ctx.eExpr())) - Double.valueOf(visit(ctx.expr(0)));
-//                return String.valueOf(a);
-//            }
-//            if (ctx.getChild(1).getText().equals("*")) {
-////                System.out.println(ctx.eExpr().getText());
-////                System.out.println(ctx.expr(0).getChildCount());
-//                Double a = Double.valueOf(visit(ctx.eExpr())) * Double.valueOf(visit(ctx.expr(0)));
-//                return String.valueOf(a);
-//            }
-//            if (ctx.getChild(1).getText().equals("/")) {
-//                Double a = Double.valueOf(visit(ctx.eExpr())) / Double.valueOf(visit(ctx.expr(0)));
-//                return String.valueOf(a);
-//            }
-//            if (ctx.getChild(1).getText().equals("%")) {
-//                Double a = Double.valueOf(visit(ctx.eExpr())) % Double.valueOf(visit(ctx.expr(0)));
-//                return String.valueOf(a);
-//            }
-//            if(ctx.getChildCount() > 3 && ctx.getChild(0).getText().equals("(")){
-//                if ((ctx.getChild(0).getParent().getChildCount() == ctx.getChild(3).getParent().getChildCount())
-//                        &&ctx.getChild(3).getText().equals("+")) {
-//                    Double a = Double.valueOf(visit(ctx.getChild(1))) + Double.valueOf(visit(ctx.getChild(4)));
-//                    return String.valueOf(a);
-//                }
-//                if ((ctx.getChild(0).getParent().getChildCount() == ctx.getChild(3).getParent().getChildCount())
-//                        &&ctx.getChild(3).getText().equals("-")) {
-//                    Double a = Double.valueOf(visit(ctx.getChild(1))) - Double.valueOf(visit(ctx.getChild(4)));
-//                    return String.valueOf(a);
-//                }
-//                if ((ctx.getChild(0).getParent().getChildCount() == ctx.getChild(3).getParent().getChildCount())
-//                        &&ctx.getChild(3).getText().equals("*")) {
-//                    Double a = Double.valueOf(visit(ctx.getChild(1))) * Double.valueOf(visit(ctx.getChild(4)));
-//                    return String.valueOf(a);
-//                }
-//                if ((ctx.getChild(0).getParent().getChildCount() == ctx.getChild(3).getParent().getChildCount())
-//                        &&ctx.getChild(3).getText().equals("/")) {
-//                    Double a = Double.valueOf(visit(ctx.getChild(1))) / Double.valueOf(visit(ctx.getChild(4)));
-//                    return String.valueOf(a);
-//                }
-//                if ((ctx.getChild(0).getParent().getChildCount() == ctx.getChild(3).getParent().getChildCount())
-//                        &&ctx.getChild(3).getText().equals("%")) {
-//                    Double a = Double.valueOf(visit(ctx.getChild(1))) % Double.valueOf(visit(ctx.getChild(4)));
-//                    return String.valueOf(a);
-//                }
-//            }
-//            if (ctx.getChildCount() == 3 && ctx.getChild(0).getText().equals("(")){
-//                return visit(ctx.getChild(1));
-//            }
-//        }
-//        if(ctx.getChildCount() == 1){
-//            return visit(ctx.getChild(0));
-//        }
-//        return visitChildren(ctx);
-//    }
-//    @Override
-//    public String visitVarDecl(HelloParser.VarDeclContext ctx) {
-//        if (ctx.getChild(0).getText().equals("int")) {
-//            String value = visit(ctx.expr().get(0));
-//            Double a  = Double.parseDouble(value.trim());
-//            Integer b = a.intValue();
-//            props.put(ctx.getChild(1).getText(),String.valueOf(b));
-//        }else if (ctx.getChild(0).getText().equals("real")) {
-//            String value = visit(ctx.expr().get(0));
-//            Double a  = Double.parseDouble(value.trim());
-////            Integer b = a.intValue();
-//            props.put(ctx.getChild(1).getText(),String.valueOf(a));
-//        }else if (ctx.getChild(0).getText().equals("double")) {
-//            String value = visit(ctx.expr().get(0));
-//            Double a  = Double.parseDouble(value.trim());
-////            Integer b = a.intValue();
-//            props.put(ctx.getChild(1).getText(),String.valueOf(a));
-//        }else if (ctx.getChild(0).getText().equals("bool")) {
-//            String value = visit(ctx.expr().get(0));
-////            Double a  = Double.parseDouble(value.trim());
-////            Integer b = a.intValue();
-//            props.put(ctx.getChild(1).getText(),String.valueOf(value));
-//        }else if (ctx.getChild(0).getText().equals("char")) {
-//            String value = visit(ctx.expr().get(0));
-////            Double a  = Double.parseDouble(value.trim());
-////            Integer b = a.intValue();
-//            props.put(ctx.getChild(1).getText(),String.valueOf(value));
-//        }
-//
-//        return visitChildren(ctx);
-//    }
-    public Variable visitWriteStmt(HelloParser.WriteStmtContext ctx) {
+    @Override
+    public Variable visitWhileStmt(HelloParser.WhileStmtContext ctx) {
+        Variable var = visit(ctx.compare());
+        while (var.getValue().equals("true")){
+            visit(ctx.stmtBlock());
+            var = visit(ctx.compare());
+        }
+        return new Variable();
+    }
+    @Override
+    public Variable visitForStmt(HelloParser.ForStmtContext ctx) {
+        visit(ctx.varDecl());
+        Variable var = visit(ctx.compare());
+        while (var.getValue().equals("true")){
+            visit(ctx.stmtBlock());
+            visit(ctx.assignStmt(0));
+            var = visit(ctx.compare());
+        }
+        return new Variable();
+    }
 
-        System.out.println(memory.get(ctx.getChild(2).getText()).getValue());
+    public Variable visitWriteStmt(HelloParser.WriteStmtContext ctx) {
+        Variable var = visit(ctx.getChild(2));
+        System.out.print(var.getId());
+        System.out.print(": ");
+        System.out.print(memory.get(var.getId()).getValue());
+//        System.out.println(memory.get(var.getId()));
 //        System.out.println(ctx.expr().getText().equals(c));
 //        System.out.println(c);
 //        System.out.println(ctxD.getChild(2).getText().equals(c));
