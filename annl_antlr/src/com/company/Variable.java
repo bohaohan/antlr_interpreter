@@ -4,6 +4,20 @@ package com.company;
  * Created by bohaohan on 1/1/16.
  */
 public class Variable {
+    public Variable(){}
+    public Variable(String type){
+        this.type = type;
+    }
+    public String getVarType() {
+        return varType;
+    }
+
+    public void setVarType(String varType) {
+        this.varType = varType;
+    }
+
+    private String varType = null;
+
     public String getType() {
         return type;
     }
@@ -12,7 +26,7 @@ public class Variable {
         this.type = type;
     }
 
-    private String type;
+    private String type = null;
 
     public String getId() {
         return id;
@@ -22,7 +36,7 @@ public class Variable {
         this.id = id;
     }
 
-    private String id;
+    private String id = null;
 
     public String getValue() {
         return value;
@@ -32,5 +46,5 @@ public class Variable {
         this.value = value;
     }
 
-    private String value;
+    private String value = null;
 }
