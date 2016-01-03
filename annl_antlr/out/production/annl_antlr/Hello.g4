@@ -5,7 +5,7 @@ WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 //WS : [ \t]+ -> skip;
 
 program : stmts+ ('{' stmts '}')?;
-stmts: varDecl|ifStmt|(assignStmt Semi) |whileStmt|breakStmt|forStmt| readStmt | writeStmt|stmtBlock;
+stmts: listVar|varDecl|ifStmt|(assignStmt Semi) |whileStmt|breakStmt|forStmt| readStmt | writeStmt|stmtBlock;
 varDecl : Type (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))? Semi;
 listVar : Type list_var (Equal (expr |'{' (expr (Comma expr)*)? '}') (Comma (expr|'{' (expr(Comma expr)*)? '}'))*)? Semi;
 //varDecl : Type assignStmt Semi;

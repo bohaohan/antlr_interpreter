@@ -274,41 +274,147 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //            System.out.println(left.getType());
             Variable right = visit(ctx.expr(1));
             String rt = right.getType();
+            String type = "";
+//            if (!lt.equals(rt)){
+//                System.out.println("Can not compare d t");
+//            }
+            if ((lt.equals("int")&&lt.equals(rt))){
+                type = "int";
+            }else if (lt.equals(rt) && lt.equals("double")) {
+                type = "double";
+            }else if (lt.equals(rt) && lt.equals("char")) {
+                type = "char";
+            }else if ((lt.equals("int")&&rt.equals("double"))
+                    ||(lt.equals("double")&&rt.equals("int"))) {
+                type = "double";
+            }
+            boolean result = false;
 //            System.out.println(right.getValue());
             if(ctx.Relation().getText().equals(">")){
-                Double lv = Double.valueOf(left.getValue());
-                Double rv = Double.valueOf(right.getValue());
-                if (lv > rv) bool.setValue("true");
+                if(type.equals("int")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    Integer li = lv.intValue();
+                    Integer ri = rv.intValue();
+                    result = li > ri;
+                } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = lv > rv;
+                } else if (type.equals("char")){
+                    String lv = String.valueOf(left.getValue());
+                    String rv = String.valueOf(right.getValue());
+                    result = lv.charAt(0) > rv.charAt(0);
+                }
+                if (result) bool.setValue("true");
                 else bool.setValue("false");
             } else if(ctx.Relation().getText().equals("<")){
-                Double lv = Double.valueOf(left.getValue());
-                Double rv = Double.valueOf(right.getValue());
-                if (lv < rv) bool.setValue("true");
+                if(type.equals("int")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    Integer li = lv.intValue();
+                    Integer ri = rv.intValue();
+                    result = li < ri;
+                } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = lv < rv;
+                } else if (type.equals("char")){
+                    String lv = String.valueOf(left.getValue());
+                    String rv = String.valueOf(right.getValue());
+                    result = lv.charAt(0) < rv.charAt(0);
+                }
+                if (result) bool.setValue("true");
                 else bool.setValue("false");
             } else if(ctx.Relation().getText().equals("<=")){
-                Double lv = Double.valueOf(left.getValue());
-                Double rv = Double.valueOf(right.getValue());
-                if (lv <= rv) bool.setValue("true");
+                if(type.equals("int")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    Integer li = lv.intValue();
+                    Integer ri = rv.intValue();
+                    result = li <= ri;
+                } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = lv <= rv;
+                } else if (type.equals("char")){
+                    String lv = String.valueOf(left.getValue());
+                    String rv = String.valueOf(right.getValue());
+                    result = lv.charAt(0) <= rv.charAt(0);
+                }
+                if (result) bool.setValue("true");
                 else bool.setValue("false");
             }else if(ctx.Relation().getText().equals(">=")){
-                Double lv = Double.valueOf(left.getValue());
-                Double rv = Double.valueOf(right.getValue());
-                if (lv >= rv) bool.setValue("true");
+                if(type.equals("int")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    Integer li = lv.intValue();
+                    Integer ri = rv.intValue();
+                    result = li >= ri;
+                } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = lv >= rv;
+                } else if (type.equals("char")){
+                    String lv = String.valueOf(left.getValue());
+                    String rv = String.valueOf(right.getValue());
+                    result = lv.charAt(0) >= rv.charAt(0);
+                }
+                if (result) bool.setValue("true");
                 else bool.setValue("false");
             }else if(ctx.Relation().getText().equals("==")){
-                Double lv = Double.valueOf(left.getValue());
-                Double rv = Double.valueOf(right.getValue());
-                if (lv.equals(rv)) bool.setValue("true");
+                if(type.equals("int")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    Integer li = lv.intValue();
+                    Integer ri = rv.intValue();
+                    result = li.equals(ri);
+                } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = lv.equals(rv);
+                } else if (type.equals("char")){
+                    String lv = String.valueOf(left.getValue());
+                    String rv = String.valueOf(right.getValue());
+                    result = lv.charAt(0) == rv.charAt(0);
+                }
+                if (result) bool.setValue("true");
                 else bool.setValue("false");
             }else if(ctx.Relation().getText().equals("!=")){
-                Double lv = Double.valueOf(left.getValue());
-                Double rv = Double.valueOf(right.getValue());
-                if (!lv.equals(rv)) bool.setValue("true");
+                if(type.equals("int")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    Integer li = lv.intValue();
+                    Integer ri = rv.intValue();
+                    result = !li.equals(ri);
+                } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = !lv.equals(rv);
+                } else if (type.equals("char")){
+                    String lv = String.valueOf(left.getValue());
+                    String rv = String.valueOf(right.getValue());
+                    result = !(lv.charAt(0) == rv.charAt(0));
+                }
+                if (result) bool.setValue("true");
                 else bool.setValue("false");
             }else if(ctx.Relation().getText().equals("<>")){
-                Double lv = Double.valueOf(left.getValue());
-                Double rv = Double.valueOf(right.getValue());
-                if (!lv.equals(rv)) bool.setValue("true");
+                if(type.equals("int")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    Integer li = lv.intValue();
+                    Integer ri = rv.intValue();
+                    result = !li.equals(ri);
+                } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = !lv.equals(rv);
+                } else if (type.equals("char")){
+                    String lv = String.valueOf(left.getValue());
+                    String rv = String.valueOf(right.getValue());
+                    result = !(lv.charAt(0) == rv.charAt(0));
+                }
+                if (result) bool.setValue("true");
                 else bool.setValue("false");
             }
         }
