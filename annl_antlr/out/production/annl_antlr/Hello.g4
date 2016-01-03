@@ -7,7 +7,9 @@ WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 program : stmts+ ('{' stmts '}')?;
 stmts: listVar|varDecl|ifStmt|(assignStmt Semi) |whileStmt|breakStmt|forStmt| readStmt | writeStmt|stmtBlock;
 varDecl : Type (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))? Semi;
-listVar : Type list_var (Equal (expr |'{' (expr (Comma expr)*)? '}') (Comma (expr|'{' (expr(Comma expr)*)? '}'))*)? Semi;
+//listVar : Type (list_var (Equal (expr |'{' (expr (Comma expr)*)? '}') (Comma (expr|'{' (expr(Comma expr)*)? '}'))*)?)* Semi;
+listVar : Type sub_var (Comma sub_var)+ Semi;
+sub_var : (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?;
 //varDecl : Type assignStmt Semi;
 //Stmts : VarDecl | IfStmt| Arr_assign_stat | WhileStmt| ForStmt | BreakStmt | AssignStmt | ReadStmt | WriteStmt |
 //StmtBlock;
@@ -43,11 +45,13 @@ compare: expr (Relation expr)?;
 whileStmt : WHILE '(' compare ')' stmtBlock;
 forStmt : FOR '(' (assignStmt|varDecl) compare Semi assignStmt ')' stmtBlock;
 breakStmt : BREAK ';';
-readStmt : READ '('( ID | ID '[' expr ']' ) ')' Semi;
+readStmt : READ '(' expr ')' Semi;
 writeStmt : WRITE '(' expr ')' Semi;
+
 assignStmt : (value|list_var) Equal (expr|'{' (expr (Comma expr)*)? '}') (Comma value(Equal (expr|'{' (expr(Comma expr)*)? '}'))?)* ;
 //arr_assign_stat:Type? value Equal '{' (value|VarList) '}' Semi;
 list_var : value (Comma value)+;
+//list_var : ((value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?) (Comma ((value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?))+;
 value : arrayValue # valAV
 | ID # valID
 ;

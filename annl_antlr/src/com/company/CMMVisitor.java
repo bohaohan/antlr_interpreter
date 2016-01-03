@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Created by bohaohan on 1/1/16.
@@ -45,40 +46,86 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             value = null;
         }
         try {
+//            System.out.println(ctx.value().getChild(0).getChild(2).getText());
             if (ctx.value().getChild(0).getChild(1).getText().equals("[")) {
-                int num = Integer.valueOf(visit(ctx.value().getChild(0).getChild(2)).getValue());
-//            System.out.println(num);
-                for (int i = 0; i < num; i++) {
-                    String d = ctx.value().getChild(0).getChild(0).getText();
-                    try {
-                        Variable variable = new Variable();
-                        if (type.equals("double")){
-                            Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
-                            variable.setValue(String.valueOf(dd));
-                        } else if  (type.equals("int")) {
-                            Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
-                            Integer in = dd.intValue();
-                            variable.setValue(String.valueOf(in));
-                        }else if  (type.equals("real")) {
-                            Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
-                            Integer in = dd.intValue();
-                            variable.setValue(String.valueOf(in));
-                        }else if  (type.equals("char")) {
-                            String dd = String.valueOf(visit(ctx.expr(i)).getValue());
-//                            Integer in = dd.intValue();
-                            variable.setValue(String.valueOf(dd));
-                        }else if  (type.equals("bool")) {
-                            String dd = String.valueOf(visit(ctx.expr(i)).getValue());
-                            variable.setValue(String.valueOf(dd));
+                if (!ctx.value().getChild(0).getChild(2).getText().equals("]")) {
+                    int num = Integer.valueOf(visit(ctx.value().getChild(0).getChild(2)).getValue());
+//                    System.out.println(num);
+                    for (int i = 0; i < num; i++) {
+                        String d = ctx.value().getChild(0).getChild(0).getText();
+                        try {
+                            Variable variable = new Variable();
+                            if (type.equals("double")){
+                                Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                                variable.setValue(String.valueOf(dd));
+                            } else if  (type.equals("int")) {
+                                Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                                Integer in = dd.intValue();
+                                variable.setValue(String.valueOf(in));
+                            }else if  (type.equals("real")) {
+                                Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                                Integer in = dd.intValue();
+                                variable.setValue(String.valueOf(in));
+                            }else if  (type.equals("char")) {
+                                String dd = String.valueOf(visit(ctx.expr(i)).getValue());
+    //                            Integer in = dd.intValue();
+                                variable.setValue(String.valueOf(dd));
+                            }else if  (type.equals("bool")) {
+                                String dd = String.valueOf(visit(ctx.expr(i)).getValue());
+                                variable.setValue(String.valueOf(dd));
+                            }
+                            variable.setType(type);
+                            variable.setVarType("id");
+                            id = d + "[" + String.valueOf(i) + "]";
+//                            System.out.println(id);
+                            variable.setId(id);
+                            memory.put(d + "[" + String.valueOf(i) + "]", variable);
+                        } catch (Exception e) {
+                            id = d + "[" + String.valueOf(i) + "]";
+//                            System.out.println(id);
+                            memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
                         }
-                        variable.setType(type);
-                        variable.setVarType("id");
-                        id = d + "[" + String.valueOf(i) + "]";
-                        variable.setId(id);
-                        memory.put(d + "[" + String.valueOf(i) + "]", variable);
-                    } catch (Exception e) {
-                        memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id"));
                     }
+                } else {
+//                    System.out.println("heyhey");
+                    int num = ctx.expr().size();
+                    for (int i = 0; i < num ; i++){
+                        String d = ctx.value().getChild(0).getChild(0).getText();
+                        try {
+                            Variable variable = new Variable();
+                            if (type.equals("double")){
+                                Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                                variable.setValue(String.valueOf(dd));
+                            } else if  (type.equals("int")) {
+                                Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                                Integer in = dd.intValue();
+                                variable.setValue(String.valueOf(in));
+                            }else if  (type.equals("real")) {
+                                Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                                Integer in = dd.intValue();
+                                variable.setValue(String.valueOf(in));
+                            }else if  (type.equals("char")) {
+                                String dd = String.valueOf(visit(ctx.expr(i)).getValue());
+                                //                            Integer in = dd.intValue();
+                                variable.setValue(String.valueOf(dd));
+                            }else if  (type.equals("bool")) {
+                                String dd = String.valueOf(visit(ctx.expr(i)).getValue());
+                                variable.setValue(String.valueOf(dd));
+                            }
+                            variable.setType(type);
+                            variable.setVarType("id");
+                            id = d + "[" + String.valueOf(i) + "]";
+//                            System.out.print(id);
+//                            System.out.println(variable.getValue());
+                            variable.setId(id);
+                            memory.put(d + "[" + String.valueOf(i) + "]", variable);
+                        } catch (Exception e) {
+                            id = d + "[" + String.valueOf(i) + "]";
+//                            System.out.println(id);
+                            memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
+                        }
+                    }
+
                 }
             }else {
                 Variable variable = new Variable();
@@ -104,15 +151,154 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         return a;
     }
     @Override
+    public Variable visitListVar(HelloParser.ListVarContext ctx) {
+        String type = ctx.getChild(0).getText();
+        setValue(ctx, type);
+        return visitChildren(ctx);
+    }
+    @Override public Variable visitSub_var(HelloParser.Sub_varContext ctx) {
+//        System.out.println(ctx.getChildCount());
+        String type = getValue(ctx.getParent());
+//        System.out.println(type);
+        Variable var = new Variable();
+        if (ctx.getChildCount() == 1){
+            String id = visit(ctx.value()).getId();
+            if (visit(ctx.value()).getVarType() != null && visit(ctx.value()).getVarType().equals("array")) {
+                String d = ctx.value().getChild(0).getChild(0).getText();
+                Integer num = Double.valueOf(ctx.value().getChild(0).getChild(2).getText()).intValue();
+                for (int i = 0; i < num ; i++){
+                    try {
+                        Variable variable = new Variable();
+                        if (type.equals("double")){
+                            Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                            variable.setValue(String.valueOf(dd));
+                        } else if  (type.equals("int")) {
+                            Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                            Integer in = dd.intValue();
+                            variable.setValue(String.valueOf(in));
+                        }else if  (type.equals("real")) {
+                            Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                            Integer in = dd.intValue();
+                            variable.setValue(String.valueOf(in));
+                        }else if  (type.equals("char")) {
+                            String dd = String.valueOf(visit(ctx.expr(i)).getValue());
+                            //                            Integer in = dd.intValue();
+                            variable.setValue(String.valueOf(dd));
+                        }else if  (type.equals("bool")) {
+                            String dd = String.valueOf(visit(ctx.expr(i)).getValue());
+                            variable.setValue(String.valueOf(dd));
+                        }
+                        variable.setType(type);
+                        variable.setVarType("id");
+                        id = d + "[" + String.valueOf(i) + "]";
+//                            System.out.print(id);
+//                            System.out.println(variable.getValue());
+                        variable.setId(id);
+//                        System.out.println(id);
+                        memory.put(d + "[" + String.valueOf(i) + "]", variable);
+                    } catch (Exception e) {
+                        id = d + "[" + String.valueOf(i) + "]";
+//                        System.out.println(id);
+                        memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
+                    }
+                }
+            } else {
+                Variable variable = new Variable();
+                variable.setType(type);
+                variable.setVarType("id");
+                variable.setId(id);
+                memory.put(id, variable);
+//                System.out.println(id);
+            }
+//            System.out.println(id);
+        } else  {
+            String id = visit(ctx.value()).getId();
+            if (visit(ctx.value()).getVarType() != null && visit(ctx.value()).getVarType().equals("array")) {
+//                System.out.println(visit(ctx.value()).getVarType());
+                String d = ctx.value().getChild(0).getChild(0).getText();
+                Integer num = Double.valueOf(ctx.value().getChild(0).getChild(2).getText()).intValue();
+                for (int i = 0; i < num ; i++) {
+                    try {
+                        Variable variable = new Variable();
+                        if (type.equals("double")) {
+                            Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                            variable.setValue(String.valueOf(dd));
+                        } else if (type.equals("int")) {
+                            Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                            Integer in = dd.intValue();
+                            variable.setValue(String.valueOf(in));
+                        } else if (type.equals("real")) {
+                            Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+                            Integer in = dd.intValue();
+                            variable.setValue(String.valueOf(in));
+                        } else if (type.equals("char")) {
+                            String dd = String.valueOf(visit(ctx.expr(i)).getValue());
+                            //                            Integer in = dd.intValue();
+                            variable.setValue(String.valueOf(dd));
+                        } else if (type.equals("bool")) {
+                            String dd = String.valueOf(visit(ctx.expr(i)).getValue());
+                            variable.setValue(String.valueOf(dd));
+                        }
+                        variable.setType(type);
+                        variable.setVarType("id");
+                        id = d + "[" + String.valueOf(i) + "]";
+//                            System.out.print(id);
+//                            System.out.println(variable.getValue());
+                        variable.setId(id);
+//                        System.out.println(id);
+//                        System.out.println(variable.getValue());
+                        memory.put(d + "[" + String.valueOf(i) + "]", variable);
+                    } catch (Exception e) {
+                        id = d + "[" + String.valueOf(i) + "]";
+//                        System.out.println(id);
+                        memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
+                    }
+                }
+            } else {
+                Variable variable = new Variable();
+                variable.setType(type);
+                variable.setVarType("id");
+                variable.setId(id);
+                variable.setValue(visit(ctx.expr(0)).getValue());
+//                System.out.println(variable.getId());
+                memory.put(id, variable);
+//                System.out.println(variable.getValue());
+            }
+        }
+        return visitChildren(ctx);
+    }
+    @Override
     public Variable visitAssignStmt(HelloParser.AssignStmtContext ctx) {
+
 //        String id = ctx.value(0).getText(); // id is left-hand side of '='
         String id = visit(ctx.value(0)).getId();
+        if (!memory.containsKey(id)){
+            System.out.println("ID not defined " + id);
+            return null;
+        }
 //        id = String.valueOf(Double.valueOf(id).intValue());
         Variable value = visit(ctx.expr(0)); // compute value of expression on right
-        Variable a = new Variable();
-        a.setValue(value.getValue());
-        a.setType(value.getType());
-        a.setVarType(value.getVarType());
+        Variable a = memory.get(id);
+//        System.out.println(value.getValue());
+        try {
+            if (a.getType() != null) {
+                if (a.getType().equals("double")) {
+                    a.setValue(String.valueOf(Double.valueOf(value.getValue())));
+                } else if (a.getType().equals("int")) {
+                    a.setValue(String.valueOf(Double.valueOf(value.getValue()).intValue()));
+                } else if (a.getType().equals("char")) {
+                    a.setValue(value.getValue());
+                } else if (a.getType().equals("bool")) {
+                    a.setValue(value.getValue());
+                } else {
+                    a.setValue(String.valueOf(Double.valueOf(value.getValue())));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Unknown value");
+        }
+//        a.setType(value.getType());
+//        a.setVarType(value.getVarType());
         a.setId(id);
 
         if (!memory.containsKey(id)) System.out.println("ID not defined " + id);
@@ -126,13 +312,19 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         Variable var = new Variable();
         var.setVarType(varType);
         String subId = ctx.getChild(0).getText();
-        String value = visit(ctx.expr()).getValue();
-        int va = Double.valueOf(value).intValue();
-        if (va < 0) {
-            System.out.println("Out of boundry");
+        String id = "";
+//        System.out.println(ctx.getChildCount());
+        if (ctx.getChildCount()>3) {
+            String value = visit(ctx.expr()).getValue();
+            int va = Double.valueOf(value).intValue();
+            if (va < 0) {
+                System.out.println("Out of boundry");
+            }
+            value = String.valueOf(va);
+            id = subId + "[" + value + "]";
+        } else {
+            id = subId;
         }
-        value = String.valueOf(va);
-        String id = subId + "[" + value + "]";
         var.setId(id);
 //        System.out.println(id);
         return var;
@@ -322,6 +514,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 type = "int";
             }else if (lt.equals(rt) && lt.equals("double")) {
                 type = "double";
+            }else if (lt.equals(rt) && lt.equals("real")) {
+                type = "real";
             }else if (lt.equals(rt) && lt.equals("char")) {
                 type = "char";
             }else if ((lt.equals("int")&&rt.equals("double"))
@@ -338,6 +532,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                     Integer ri = rv.intValue();
                     result = li > ri;
                 } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = lv > rv;
+                } else if (type.equals("real")){
                     Double lv = Double.valueOf(left.getValue());
                     Double rv = Double.valueOf(right.getValue());
                     result = lv > rv;
@@ -359,6 +557,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                     Double lv = Double.valueOf(left.getValue());
                     Double rv = Double.valueOf(right.getValue());
                     result = lv < rv;
+                } else if (type.equals("real")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = lv < rv;
                 } else if (type.equals("char")){
                     String lv = String.valueOf(left.getValue());
                     String rv = String.valueOf(right.getValue());
@@ -374,6 +576,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                     Integer ri = rv.intValue();
                     result = li <= ri;
                 } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = lv <= rv;
+                } else if (type.equals("real")){
                     Double lv = Double.valueOf(left.getValue());
                     Double rv = Double.valueOf(right.getValue());
                     result = lv <= rv;
@@ -395,6 +601,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                     Double lv = Double.valueOf(left.getValue());
                     Double rv = Double.valueOf(right.getValue());
                     result = lv >= rv;
+                } else if (type.equals("real")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = lv >= rv;
                 } else if (type.equals("char")){
                     String lv = String.valueOf(left.getValue());
                     String rv = String.valueOf(right.getValue());
@@ -412,6 +622,12 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 } else if (type.equals("double")){
                     Double lv = Double.valueOf(left.getValue());
                     Double rv = Double.valueOf(right.getValue());
+                    result = lv.equals(rv);
+                } else if (type.equals("real")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    System.out.println(lv);
+                    System.out.println(rv);
                     result = lv.equals(rv);
                 } else if (type.equals("char")){
                     String lv = String.valueOf(left.getValue());
@@ -431,6 +647,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                     Double lv = Double.valueOf(left.getValue());
                     Double rv = Double.valueOf(right.getValue());
                     result = !lv.equals(rv);
+                } else if (type.equals("real")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = !lv.equals(rv);
                 } else if (type.equals("char")){
                     String lv = String.valueOf(left.getValue());
                     String rv = String.valueOf(right.getValue());
@@ -446,6 +666,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                     Integer ri = rv.intValue();
                     result = !li.equals(ri);
                 } else if (type.equals("double")){
+                    Double lv = Double.valueOf(left.getValue());
+                    Double rv = Double.valueOf(right.getValue());
+                    result = !lv.equals(rv);
+                } else if (type.equals("real")){
                     Double lv = Double.valueOf(left.getValue());
                     Double rv = Double.valueOf(right.getValue());
                     result = !lv.equals(rv);
@@ -505,13 +729,39 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 
     public Variable visitWriteStmt(HelloParser.WriteStmtContext ctx) {
         Variable var = visit(ctx.getChild(2));
-        System.out.print(var.getId());
-        System.out.print(": ");
-        System.out.print(memory.get(var.getId()).getValue());
-//        System.out.println(memory.get(var.getId()));
-//        System.out.println(ctx.expr().getText().equals(c));
-//        System.out.println(c);
-//        System.out.println(ctxD.getChild(2).getText().equals(c));
+
+//        System.out.print(var.getVarType());
+        if(var.getVarType()!= null && var.getVarType().equals("const")) {
+            System.out.println(var.getValue());
+        } else {
+            System.out.print(var.getId());
+            System.out.print(": ");
+            System.out.println(memory.get(var.getId()).getValue());
+        }
+        return visitChildren(ctx);
+    }
+    @Override
+    public Variable visitReadStmt(HelloParser.ReadStmtContext ctx) {
+        Scanner sc=new Scanner(System.in);
+        String t = sc.next();
+        Variable var = visit(ctx.getChild(2));
+//        var.setValue(t);
+//        System.out.println(var.getId());
+        if (var.getType() != null) {
+            if (var.getType().equals("double")) {
+                var.setValue(String.valueOf(Double.valueOf(t)));
+            } else if(var.getType().equals("int")) {
+                var.setValue(String.valueOf(Double.valueOf(t).intValue()));
+            } else if(var.getType().equals("char")) {
+                var.setValue(t);
+            } else if(var.getType().equals("bool")) {
+                var.setValue(t);
+            } else {
+                var.setValue(String.valueOf(Double.valueOf(t)));
+            }
+        }
+//        System.out.println(var.getId());
+        memory.put(var.getId(),var);
         return visitChildren(ctx);
     }
 }

@@ -8,6 +8,15 @@ public class Variable {
     public Variable(String type){
         this.type = type;
     }
+    public Variable(String varType, String type) {
+        this.varType = varType;
+        this.type = type;
+    }
+    public Variable(String varType, String type, String id) {
+        this.varType = varType;
+        this.type = type;
+        this.id = id;
+    }
     public String getVarType() {
         return varType;
     }
@@ -15,6 +24,7 @@ public class Variable {
     public void setVarType(String varType) {
         this.varType = varType;
     }
+
 
     private String varType = null;
 
@@ -46,5 +56,5 @@ public class Variable {
         this.value = value;
     }
 
-    private String value = null;
+    private String value = "0";
 }
