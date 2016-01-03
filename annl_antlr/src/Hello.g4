@@ -49,7 +49,7 @@ readStmt : READ '('( ID | ID '[' expr ']' ) ')' Semi;
 writeStmt : WRITE '(' expr ')' Semi;
 
 assignStmt : (value|list_var) Equal (expr|'{' (expr (Comma expr)*)? '}') (Comma value(Equal (expr|'{' (expr(Comma expr)*)? '}'))?)* ;
-//arr_assign_stat:Type? value Equal '{' (value|VarList) '}' Semi;
+//arr_assign_stat:Type? value Equal '{' (value|ƒVarList) '}' Semi;
 list_var : value (Comma value)+;
 //list_var : ((value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?) (Comma ((value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?))+;
 value : arrayValue # valAV
