@@ -34,6 +34,12 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitListVar(HelloParser.ListVarContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link HelloParser#sub_var}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSub_var(HelloParser.Sub_varContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link HelloParser#stmtBlock}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
