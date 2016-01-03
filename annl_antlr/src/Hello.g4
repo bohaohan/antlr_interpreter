@@ -5,7 +5,7 @@ WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 //WS : [ \t]+ -> skip;
 
 program : stmts+ ('{' stmts '}')?;
-stmts: varDecl|ifStmt|(assignStmt Semi) |whileStmt|breakStmt|forStmt| readStmt | writeStmt|stmtBlock;
+stmts: listVar|varDecl|ifStmt|(assignStmt Semi) |whileStmt|breakStmt|forStmt| readStmt | writeStmt|stmtBlock;
 varDecl : Type (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))? Semi;
 listVar : Type list_var (Equal (expr |'{' (expr (Comma expr)*)? '}') (Comma (expr|'{' (expr(Comma expr)*)? '}'))*)? Semi;
 //varDecl : Type assignStmt Semi;
@@ -46,7 +46,7 @@ breakStmt : BREAK ';';
 readStmt : READ '('( ID | ID '[' expr ']' ) ')' Semi;
 writeStmt : WRITE '(' expr ')' Semi;
 assignStmt : (value|list_var) Equal (expr|'{' (expr (Comma expr)*)? '}') (Comma value(Equal (expr|'{' (expr(Comma expr)*)? '}'))?)* ;
-//arr_assign_stat:Type? value Equal '{' (value|VarList) '}' Semi;
+//arr_assign_stat:Type? value Equal '{' (value|ƒVarList) '}' Semi;
 list_var : value (Comma value)+;
 value : arrayValue # valAV
 | ID # valID

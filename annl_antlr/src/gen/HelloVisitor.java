@@ -1,4 +1,4 @@
-package gen;// Generated from /Users/bohaohan/Documents/workspace/annl_antlr/src/Hello.g4 by ANTLR 4.5.1
+package gen;// Generated from /Users/qm/IdeaProjects/CMM/antlr_interpreter/annl_antlr/src/Hello.g4 by ANTLR 4.5.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -46,6 +46,34 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfStmt(HelloParser.IfStmtContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code parens}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParens(HelloParser.ParensContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code MulDiv}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMulDiv(HelloParser.MulDivContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code AddSub}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAddSub(HelloParser.AddSubContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code double}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDouble(HelloParser.DoubleContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code char}
 	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree
@@ -60,40 +88,12 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInt(HelloParser.IntContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code AddSub}
-	 * labeled alternative in {@link HelloParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAddSub(HelloParser.AddSubContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code expValue}
 	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitExpValue(HelloParser.ExpValueContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code parens}
-	 * labeled alternative in {@link HelloParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParens(HelloParser.ParensContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code double}
-	 * labeled alternative in {@link HelloParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDouble(HelloParser.DoubleContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code MulDiv}
-	 * labeled alternative in {@link HelloParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMulDiv(HelloParser.MulDivContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link HelloParser#compare}.
 	 * @param ctx the parse tree
