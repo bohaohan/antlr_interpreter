@@ -3,19 +3,20 @@ package com.company;
 /**
  * Created by bohaohan on 1/1/16.
  */
-public class Variable {
+public class Variable extends Symbol{
     public Variable(){}
     public Variable(String type){
-        this.type = type;
+        this.dType = type;
     }
     public Variable(String varType, String type) {
         this.varType = varType;
-        this.type = type;
+        this.dType = type;
     }
     public Variable(String varType, String type, String id) {
         this.varType = varType;
-        this.type = type;
+        this.dType = type;
         this.id = id;
+        this.name = id;
     }
     public String getVarType() {
         return varType;
@@ -29,14 +30,14 @@ public class Variable {
     private String varType = null;
 
     public String getType() {
-        return type;
+        return dType;
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.dType = type;
     }
 
-    private String type = null;
+    private String dType = null;
 
     public String getId() {
         return id;
@@ -44,6 +45,7 @@ public class Variable {
 
     public void setId(String id) {
         this.id = id;
+        this.name = id;
     }
 
     private String id = null;
