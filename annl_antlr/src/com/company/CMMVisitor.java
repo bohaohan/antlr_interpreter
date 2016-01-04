@@ -4,6 +4,7 @@ import gen.HelloBaseVisitor;
 import gen.HelloParser;
 import org.antlr.v4.misc.OrderedHashMap;
 import com.company.Variable;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
@@ -15,12 +16,25 @@ import java.util.Scanner;
  * Created by bohaohan on 1/1/16.
  */
 public class CMMVisitor extends HelloBaseVisitor<Variable>{
-    static Map<String,String> props = new OrderedHashMap<String, String>();
+    ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
+    GlobalScope globals;
+    Scope currentScope;
+
+
+    void saveScope(ParserRuleContext ctx, Scope s) {
+        scopes.put(ctx, s);
+    }
+
     ParseTreeProperty<String> values = new ParseTreeProperty<String>();
     Map<String, Variable> memory = new HashMap<String, Variable>();
     public void setValue(ParseTree node, String value) { values.put(node, value); }
     public String getValue(ParseTree node) { return values.get(node); }
-
+    @Override
+    public Variable visitProgram(HelloParser.ProgramContext ctx) {
+        globals = new GlobalScope(null);
+        currentScope = globals;
+        return visitChildren(ctx);
+    }
     @Override
     public Variable visitVarDecl(HelloParser.VarDeclContext ctx) {
 //        System.out.println(ctx.expr().size());
@@ -38,9 +52,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             }else if  (type.equals("real")) {
                 value = String.valueOf(Double.valueOf(result.getValue()));
             }else if  (type.equals("char")) {
-                value = ctx.value().getText();
+                value = ctx.expr(0).getText();
             }else if  (type.equals("bool")) {
-                value = ctx.value().getText();
+                value = ctx.expr(0).getText();
+//                System.out.println(value);
             }
         }catch (Exception e){
             value = null;
@@ -79,11 +94,13 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                             id = d + "[" + String.valueOf(i) + "]";
 //                            System.out.println(id);
                             variable.setId(id);
-                            memory.put(d + "[" + String.valueOf(i) + "]", variable);
+                            currentScope.define(variable);
+//                            memory.put(d + "[" + String.valueOf(i) + "]", variable);
                         } catch (Exception e) {
                             id = d + "[" + String.valueOf(i) + "]";
 //                            System.out.println(id);
-                            memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
+                            currentScope.define(new Variable("id", type, id));
+//                            memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
                         }
                     }
                 } else {
@@ -118,11 +135,13 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //                            System.out.print(id);
 //                            System.out.println(variable.getValue());
                             variable.setId(id);
-                            memory.put(d + "[" + String.valueOf(i) + "]", variable);
+//                            memory.put(d + "[" + String.valueOf(i) + "]", variable);
+                            currentScope.define(variable);
                         } catch (Exception e) {
                             id = d + "[" + String.valueOf(i) + "]";
 //                            System.out.println(id);
-                            memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
+                            currentScope.define(new Variable("id", type, id));
+//                            memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
                         }
                     }
 
@@ -133,7 +152,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 variable.setType(type);
                 variable.setVarType("id");
                 variable.setId(id);
-                memory.put(id, variable); // store it in our memory
+                currentScope.define(variable);
+//                memory.put(id, variable); // store it in our memory
             }
         } catch (Exception e){
             Variable variable = new Variable();
@@ -141,7 +161,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             variable.setVarType("id");
             variable.setId(id);
             variable.setType(ctx.getChild(0).getText());
-            memory.put(id, variable); // store it in our memory
+            currentScope.define(variable);
+//            memory.put(id, variable); // store it in our memory
         }
         Variable a = new Variable();
         a.setValue(value);
@@ -195,11 +216,13 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //                            System.out.println(variable.getValue());
                         variable.setId(id);
 //                        System.out.println(id);
-                        memory.put(d + "[" + String.valueOf(i) + "]", variable);
+                        currentScope.define(variable);
+//                        memory.put(d + "[" + String.valueOf(i) + "]", variable);
                     } catch (Exception e) {
                         id = d + "[" + String.valueOf(i) + "]";
 //                        System.out.println(id);
-                        memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
+                        currentScope.define(new Variable("id", type, id));
+//                        memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
                     }
                 }
             } else {
@@ -207,7 +230,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 variable.setType(type);
                 variable.setVarType("id");
                 variable.setId(id);
-                memory.put(id, variable);
+                currentScope.define(variable);
+//                memory.put(id, variable);
 //                System.out.println(id);
             }
 //            System.out.println(id);
@@ -247,11 +271,13 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                         variable.setId(id);
 //                        System.out.println(id);
 //                        System.out.println(variable.getValue());
-                        memory.put(d + "[" + String.valueOf(i) + "]", variable);
+                        currentScope.define(variable);
+//                        memory.put(d + "[" + String.valueOf(i) + "]", variable);
                     } catch (Exception e) {
                         id = d + "[" + String.valueOf(i) + "]";
 //                        System.out.println(id);
-                        memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
+                        currentScope.define(new Variable("id", type, id));
+//                        memory.put(d + "[" + String.valueOf(i) + "]", new Variable("id", type, id));
                     }
                 }
             } else {
@@ -261,7 +287,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 variable.setId(id);
                 variable.setValue(visit(ctx.expr(0)).getValue());
 //                System.out.println(variable.getId());
-                memory.put(id, variable);
+//                memory.put(id, variable);
+                currentScope.define(variable);
 //                System.out.println(variable.getValue());
             }
         }
@@ -271,14 +298,16 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitAssignStmt(HelloParser.AssignStmtContext ctx) {
 
 //        String id = ctx.value(0).getText(); // id is left-hand side of '='
-        String id = visit(ctx.value(0)).getId();
-        if (!memory.containsKey(id)){
+        String id = visit(ctx.value()).getId();
+//        if (!memory.containsKey(id)){
+        if (currentScope.resolve(id) == null){
             System.out.println("ID not defined " + id);
             return null;
         }
 //        id = String.valueOf(Double.valueOf(id).intValue());
-        Variable value = visit(ctx.expr(0)); // compute value of expression on right
-        Variable a = memory.get(id);
+        Variable value = visit(ctx.expr()); // compute value of expression on right
+//        Variable a = memory.get(id);
+        Variable a = (Variable) currentScope.resolve(id);
 //        System.out.println(value.getValue());
         try {
             if (a.getType() != null) {
@@ -301,8 +330,12 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //        a.setVarType(value.getVarType());
         a.setId(id);
 
-        if (!memory.containsKey(id)) System.out.println("ID not defined " + id);
-        else memory.put(id, a);
+//        if (!memory.containsKey(id))
+        if (currentScope.resolve(id) == null)
+            System.out.println("ID not defined " + id);
+//        else
+//            currentScope.define(a);
+//            memory.put(id, a);
 
         return a;
     }
@@ -380,6 +413,18 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         var.setVarType("const");
         return var;
     }
+
+    @Override
+    public Variable visitExpBool(HelloParser.ExpBoolContext ctx) {
+        Variable var = new Variable();
+        String result;
+        result = String.valueOf(ctx.bool().getText());
+//        System.out.println(result);
+        var.setValue(result);
+        var.setType("bool");
+        var.setVarType("const");
+        return var;
+    }
     @Override
     public Variable visitChar(HelloParser.CharContext ctx) {
         Variable var = new Variable();
@@ -402,8 +447,11 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitExpValue(HelloParser.ExpValueContext ctx) {
         String id = visit(ctx.value()).getId();
 //        System.out.println(id);
-        if ( memory.containsKey(id) ) {
-            return memory.get(id);
+//        if ( memory.containsKey(id) ) {
+//            return memory.get(id);
+//        }
+        if (currentScope.resolve(id) != null) {
+            return (Variable)currentScope.resolve(id);
         }
         return null;
     }
@@ -491,9 +539,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             Variable result = visit(ctx.expr(0));
 //            System.out.println(result.getType());
 //            System.out.println(Double.valueOf(result.getValue()).intValue());
-            if ((result.getType().equals("double") || result.getType().equals("real")
-                    || result.getType().equals("int"))
-                    && Double.valueOf(result.getValue()).intValue() != 0){
+            if (result.getType() != null &&(result.getType().equals("double") || result.getType().equals("real"))
+                    && !Double.valueOf(result.getValue()).equals(0)){
+                bool.setValue("true");
+            }else if (result.getType() != null &&result.getType().equals("int")&& Double.valueOf(result.getValue()).intValue() != 0){
                 bool.setValue("true");
             } else if (result.getType() != null && (result.getType().equals("char")
                     || result.getType().equals("bool")) && !result.getValue().equals("false")){
@@ -687,6 +736,9 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     }
     @Override
     public Variable visitIfStmt(HelloParser.IfStmtContext ctx) {
+        currentScope = new LocalScope(currentScope);
+        saveScope(ctx, currentScope);
+
         int num_c = ctx.compare().size();
         boolean f = false;
         for (int i = 0; i < num_c; i++){
@@ -703,20 +755,25 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 visit(ctx.stmtBlock(num_c));
             }
         }
-
+        currentScope = currentScope.getEnclosingScope();
         return new Variable();
     }
     @Override
     public Variable visitWhileStmt(HelloParser.WhileStmtContext ctx) {
+        currentScope = new LocalScope(currentScope);
+        saveScope(ctx, currentScope);
         Variable var = visit(ctx.compare());
         while (var.getValue().equals("true")){
             visit(ctx.stmtBlock());
             var = visit(ctx.compare());
         }
+        currentScope = currentScope.getEnclosingScope();
         return new Variable();
     }
     @Override
     public Variable visitForStmt(HelloParser.ForStmtContext ctx) {
+        currentScope = new LocalScope(currentScope);
+        saveScope(ctx, currentScope);
         visit(ctx.varDecl());
         Variable var = visit(ctx.compare());
         while (var.getValue().equals("true")){
@@ -724,9 +781,14 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             visit(ctx.assignStmt(0));
             var = visit(ctx.compare());
         }
+        currentScope = currentScope.getEnclosingScope();
         return new Variable();
     }
-
+    @Override
+    public Variable visitStmtBlock(HelloParser.StmtBlockContext ctx) {
+        return visitChildren(ctx);
+    }
+    @Override
     public Variable visitWriteStmt(HelloParser.WriteStmtContext ctx) {
         Variable var = visit(ctx.getChild(2));
 
@@ -736,7 +798,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         } else {
             System.out.print(var.getId());
             System.out.print(": ");
-            System.out.println(memory.get(var.getId()).getValue());
+//            System.out.println(memory.get(var.getId()).getValue());
+            System.out.println(((Variable)currentScope.resolve(var.getId())).getValue());
         }
         return visitChildren(ctx);
     }
@@ -744,7 +807,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitReadStmt(HelloParser.ReadStmtContext ctx) {
         Scanner sc=new Scanner(System.in);
         String t = sc.next();
-        Variable var = visit(ctx.getChild(2));
+        Variable v = visit(ctx.getChild(2));
+        Variable var = (Variable) currentScope.resolve(v.getId());
 //        var.setValue(t);
 //        System.out.println(var.getId());
         if (var.getType() != null) {
@@ -761,7 +825,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             }
         }
 //        System.out.println(var.getId());
-        memory.put(var.getId(),var);
+//        currentScope.define(var);
+//        memory.put(var.getId(),var);
         return visitChildren(ctx);
     }
 }
