@@ -35,6 +35,7 @@ expr: expr op=('*'|'/') expr # MulDiv
 | ('-')?INT # int
 | ('-')?DOUBLE # double
 | CHAR #char
+| bool #expBool
 | value # expValue
 | '(' expr ')' # parens
 ;
@@ -48,7 +49,8 @@ breakStmt : BREAK ';';
 readStmt : READ '(' expr ')' Semi;
 writeStmt : WRITE '(' expr ')' Semi;
 
-assignStmt : (value|list_var) Equal (expr|'{' (expr (Comma expr)*)? '}') (Comma value(Equal (expr|'{' (expr(Comma expr)*)? '}'))?)* ;
+assignStmt : (value) Equal (expr) ;
+
 //arr_assign_stat:Type? value Equal '{' (value|VarList) '}' Semi;
 list_var : value (Comma value)+;
 //list_var : ((value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?) (Comma ((value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?))+;
