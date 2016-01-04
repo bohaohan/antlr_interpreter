@@ -35,6 +35,7 @@ expr: expr op=('*'|'/') expr # MulDiv
 | ('-')?INT # int
 | ('-')?DOUBLE # double
 | CHAR #char
+| bool #expBool
 | value # expValue
 | '(' expr ')' # parens
 ;
