@@ -271,13 +271,13 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitAssignStmt(HelloParser.AssignStmtContext ctx) {
 
 //        String id = ctx.value(0).getText(); // id is left-hand side of '='
-        String id = visit(ctx.value(0)).getId();
+        String id = visit(ctx.value()).getId();
         if (!memory.containsKey(id)){
             System.out.println("ID not defined " + id);
             return null;
         }
 //        id = String.valueOf(Double.valueOf(id).intValue());
-        Variable value = visit(ctx.expr(0)); // compute value of expression on right
+        Variable value = visit(ctx.expr()); // compute value of expression on right
         Variable a = memory.get(id);
 //        System.out.println(value.getValue());
         try {

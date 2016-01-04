@@ -50,8 +50,8 @@ public class CMMVisitor_backup extends HelloBaseVisitor<String>{
     }
     @Override
     public String visitAssignStmt(HelloParser.AssignStmtContext ctx) {
-        String id = ctx.value(0).getText(); // id is left-hand side of '='
-        String value = visit(ctx.expr(0)); // compute value of expression on right
+        String id = ctx.value().getText(); // id is left-hand side of '='
+        String value = visit(ctx.expr()); // compute value of expression on right
         if (!memory.containsKey(id)) System.out.println("ID not defined " + id);
         else memory.put(id, value);
         return value;
