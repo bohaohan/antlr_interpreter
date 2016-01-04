@@ -63,18 +63,83 @@ public class RefPhase extends HelloBaseListener{
 //    varDecl : Type (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))? Semi;
 //    listVar : Type sub_var (Comma sub_var)+ Semi;
 //    sub_var : (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?;
-
+//    list_var : value (Comma value)+;
 //    compare: expr (Relation expr)?;
 //    Relation : '>'|'<'|'>='|'<='|'=='|'!='|'<>';
+//    assignStmt : (value|list_var) Equal (expr|'{' (expr (Comma expr)*)? '}') (Comma value(Equal (expr|'{' (expr(Comma expr)*)? '}'))?)* ;
+
+    public void exitAssignStmt(HelloParser.AssignStmtContext ctx) {
+        HelloParser.ExprContext expr = ctx.expr();
+        HelloParser.ValueContext value = ctx.value();
+        Symbol symbol;
+        String name = value.getText();
+        if (name.contains("[")) {
+            name = name.substring(0, name.indexOf("["));
+        }
+        symbol = currentScope.resolve(name);
+        Symbol.Type type = types.get(expr);
+        if (symbol != null && type!= null) {
+            if (symbol.type != type) {
+                String typeL;
+                String typeR;
+                typeL = checkType(symbol.type);
+                typeR = checkType(type);
+                CheckSymbol.error(expr.start, "can not match type " + typeL + " and " + typeR);
+            }
+        }
+    }
+
+    public String checkType(Symbol.Type type) {
+        String typeName;
+        switch (type) {
+            case BOOL:
+                typeName = "bool";
+                break;
+            case REAL:
+                typeName = "real";
+                break;
+            case CHAR:
+                typeName = "char";
+                break;
+            case INT:
+                typeName = "int";
+                break;
+            case DOUBLE:
+                typeName = "bool";
+                break;
+            default:
+                typeName = "unknown";
+                break;
+        }
+        return typeName;
+    }
 
     public void exitCompare(HelloParser.CompareContext ctx) {
         HelloParser.ExprContext exprL = ctx.expr(0);
         HelloParser.ExprContext exprR;
         if (ctx.expr().size() > 1) {
             exprR = ctx.expr(1);
+            if (exprL != null && exprR != null) {
+                Symbol.Type typeL = types.get(exprL);
+                Symbol.Type typeR = types.get(exprR);
+                if (typeL == typeR && ((typeL == Symbol.Type.BOOL && typeR == Symbol.Type.BOOL) || (typeL == Symbol.Type.INT && typeR == Symbol.Type.INT))) {
+                    // 类型符合
+                } else {
+                    CheckSymbol.error(exprL.start, "variable must be bool type");
+                }
+            } else {
+                // 表达式为空
+            }
         } else {
-            if (types.get(exprL) != Symbol.Type.BOOL) {
-                CheckSymbol.error(ctx.expr(0).start, "variable must be bool type");
+//            System.out.println(types.get(exprL));
+            if (exprL != null) {
+                if (types.get(exprL) == Symbol.Type.BOOL || types.get(exprL) == Symbol.Type.INT) {
+                    // 类型符合
+                } else {
+                    CheckSymbol.error(ctx.expr(0).start, "variable must be bool type");
+                }
+            } else {
+                //表达式为空
             }
         }
     }

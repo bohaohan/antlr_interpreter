@@ -29,16 +29,22 @@ public class DefPhase extends HelloBaseListener {
             switch (ctx.start.getText()) {
                 case "real":
                     type =  Symbol.Type.REAL_LIST;
+                    break;
                 case "char":
                     type =  Symbol.Type.CHAR_LIST;
+                    break;
                 case "bool":
                     type =  Symbol.Type.BOOL_LIST;
+                    break;
                 case "double":
                     type =  Symbol.Type.DOUBLE_LIST;
+                    break;
                 case "int":
                     type =  Symbol.Type.INT_LIST;
+                    break;
                 default:
                     type =  Symbol.Type.INVALID;
+                    break;
             }
             var = new VariableSymbol(ctx.value().getText(), type);
             var.name = var.name.substring(0, var.name.indexOf("["));
@@ -46,16 +52,22 @@ public class DefPhase extends HelloBaseListener {
             switch (ctx.start.getText()) {
                 case "real":
                     type =  Symbol.Type.REAL;
+                    break;
                 case "char":
                     type =  Symbol.Type.CHAR;
+                    break;
                 case "bool":
                     type =  Symbol.Type.BOOL;
+                    break;
                 case "double":
                     type =  Symbol.Type.DOUBLE;
+                    break;
                 case "int":
                     type =  Symbol.Type.INT;
+                    break;
                 default:
                     type =  Symbol.Type.INVALID;
+                    break;
             }
             var = new VariableSymbol(ctx.value().getText(), type);
         }
@@ -72,16 +84,22 @@ public class DefPhase extends HelloBaseListener {
                 switch (ctx.start.getText()) {
                     case "real":
                         type =  Symbol.Type.REAL_LIST;
+                        break;
                     case "char":
                         type =  Symbol.Type.CHAR_LIST;
+                        break;
                     case "bool":
                         type =  Symbol.Type.BOOL_LIST;
+                        break;
                     case "double":
                         type =  Symbol.Type.DOUBLE_LIST;
+                        break;
                     case "int":
                         type =  Symbol.Type.INT_LIST;
+                        break;
                     default:
                         type =  Symbol.Type.INVALID;
+                        break;
                 }
                 var = new VariableSymbol(((HelloParser.Sub_varContext)varList.get(i)).value().getText(), type);
                 var.name = var.name.substring(0, var.name.indexOf("["));
@@ -89,16 +107,22 @@ public class DefPhase extends HelloBaseListener {
                 switch (ctx.start.getText()) {
                     case "real":
                         type =  Symbol.Type.REAL;
+                        break;
                     case "char":
                         type =  Symbol.Type.CHAR;
+                        break;
                     case "bool":
                         type =  Symbol.Type.BOOL;
+                        break;
                     case "double":
                         type =  Symbol.Type.DOUBLE;
+                        break;
                     case "int":
                         type =  Symbol.Type.INT;
+                        break;
                     default:
                         type =  Symbol.Type.INVALID;
+                        break;
                 }
                 var = new VariableSymbol(((HelloParser.Sub_varContext)varList.get(i)).value().getText(), type);
             }
@@ -172,6 +196,7 @@ public class DefPhase extends HelloBaseListener {
         }
         Symbol.Type type;
         Symbol var = currentScope.resolve(name);
+//        System.out.println(var.type);
         if (var != null) {
             switch (var.type) {
                 case BOOL_LIST:
@@ -255,6 +280,7 @@ public class DefPhase extends HelloBaseListener {
             saveType(ctx, Symbol.Type.INVALID);
         }
     }
+
 
 
 }

@@ -1,4 +1,6 @@
 int a = 'h';
-int b = 1, d = 'a', g;
-int c = {'a'};
-int h['1'] = 1;
+int b = 1;
+b = 'h';
+if (b) {
+    write(b);
+}
