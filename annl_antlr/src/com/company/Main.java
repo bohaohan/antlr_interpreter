@@ -4,16 +4,18 @@ import org.antlr.v4.runtime.tree.*;
 import gen.HelloLexer;
 import gen.HelloParser;
 import java.io.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.antlr.v4.runtime.tree.Trees.getNodeText;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-	// write your code here
+//	 write your code here
         InputStream input1 = null;
         try {
-            input1 = new FileInputStream("/Users/qm/IdeaProjects/CMM/antlr_interpreter/annl_antlr/测试脚本/test.cmm");
+            input1 = new FileInputStream("/Users/qm/IdeaProjects/CMM/antlr_interpreter/annl_antlr/测试脚本/test5_IF-ELSE.cmm");
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -26,8 +28,8 @@ public class Main {
         ParseTree tree = parser.program();
         DefPhase def = new DefPhase();
         walker.walk(def, tree);
-        RefPhase ref = new RefPhase(def.globals, def.scopes);
+        RefPhase ref = new RefPhase(def.globals, def.scopes, def.types);
         walker.walk(ref, tree);
+     }
 
-    }
 }
