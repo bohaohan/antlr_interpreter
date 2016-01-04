@@ -67,7 +67,7 @@ fragment LETTER: [a-zA-Z];
 NEWLINE : '\r'? '\n' ;
 bool: 'true' | 'false';
 INT :  NUM;
-CHAR: '\'' LETTER '\'';
+CHAR: '\'' (LETTER|NUM) '\'';
 SL_COMMENT :   '//' .*? (('\n')|EOF)  -> skip;
 eLSE:'else';
 Semi : ';';
