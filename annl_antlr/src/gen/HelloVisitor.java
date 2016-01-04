@@ -59,6 +59,13 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParens(HelloParser.ParensContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code expBool}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpBool(HelloParser.ExpBoolContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code MulDiv}
 	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree

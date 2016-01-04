@@ -89,6 +89,18 @@ public interface HelloListener extends ParseTreeListener {
 	 */
 	void exitParens(HelloParser.ParensContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code expBool}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpBool(HelloParser.ExpBoolContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code expBool}
+	 * labeled alternative in {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpBool(HelloParser.ExpBoolContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code MulDiv}
 	 * labeled alternative in {@link HelloParser#expr}.
 	 * @param ctx the parse tree

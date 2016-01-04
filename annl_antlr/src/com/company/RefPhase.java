@@ -17,6 +17,8 @@ public class RefPhase extends HelloBaseListener{
     Scope currentScope;
     Stack<Symbol.Type> stack = new Stack<Symbol.Type>();
     ParseTreeProperty<Symbol.Type> types;
+    boolean error = false;
+    String errorMessage;
 
     public RefPhase(GlobalScope globals, ParseTreeProperty<Scope> scopes, ParseTreeProperty<Symbol.Type> types) {
         this.globals = globals;
@@ -52,22 +54,6 @@ public class RefPhase extends HelloBaseListener{
         currentScope = currentScope.getEnclosingScope();
     }
 
-//    expr: expr op=('*'|'/') expr # MulDiv
-//    | expr op=('+'|'-') expr # AddSub
-//    | ('-')?INT # int
-//    | ('-')?DOUBLE # double
-//    | CHAR #char
-//    | value # expValue
-//    | '(' expr ')' # parens
-
-//    varDecl : Type (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))? Semi;
-//    listVar : Type sub_var (Comma sub_var)+ Semi;
-//    sub_var : (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?;
-//    list_var : value (Comma value)+;
-//    compare: expr (Relation expr)?;
-//    Relation : '>'|'<'|'>='|'<='|'=='|'!='|'<>';
-//    assignStmt : (value|list_var) Equal (expr|'{' (expr (Comma expr)*)? '}') (Comma value(Equal (expr|'{' (expr(Comma expr)*)? '}'))?)* ;
-
     public void exitAssignStmt(HelloParser.AssignStmtContext ctx) {
         HelloParser.ExprContext expr = ctx.expr();
         HelloParser.ValueContext value = ctx.value();
@@ -80,11 +66,17 @@ public class RefPhase extends HelloBaseListener{
         Symbol.Type type = types.get(expr);
         if (symbol != null && type!= null) {
             if (symbol.type != type) {
-                String typeL;
-                String typeR;
-                typeL = checkType(symbol.type);
-                typeR = checkType(type);
-                CheckSymbol.error(expr.start, "can not match type " + typeL + " and " + typeR);
+                if ((symbol.type == Symbol.Type.INT || symbol.type == Symbol.Type.DOUBLE || symbol.type == Symbol.Type.REAL)
+                        && (type == Symbol.Type.DOUBLE || type ==Symbol.Type.INT || type == Symbol.Type.REAL) ) {
+
+                } else {
+                    String typeL;
+                    String typeR;
+                    typeL = checkType(symbol.type);
+                    typeR = checkType(type);
+                    error = true;
+                    errorMessage += CheckSymbol.error(expr.start, "can not match type " + typeL + " and " + typeR);
+                }
             }
         }
     }
@@ -125,7 +117,8 @@ public class RefPhase extends HelloBaseListener{
                 if (typeL == typeR && ((typeL == Symbol.Type.BOOL && typeR == Symbol.Type.BOOL) || (typeL == Symbol.Type.INT && typeR == Symbol.Type.INT))) {
                     // 类型符合
                 } else {
-                    CheckSymbol.error(exprL.start, "variable must be bool type");
+                    error = true;
+                    errorMessage += CheckSymbol.error(exprL.start, "variable must be bool type");
                 }
             } else {
                 // 表达式为空
@@ -136,7 +129,8 @@ public class RefPhase extends HelloBaseListener{
                 if (types.get(exprL) == Symbol.Type.BOOL || types.get(exprL) == Symbol.Type.INT) {
                     // 类型符合
                 } else {
-                    CheckSymbol.error(ctx.expr(0).start, "variable must be bool type");
+                    error = true;
+                    errorMessage += CheckSymbol.error(ctx.expr(0).start, "variable must be bool type");
                 }
             } else {
                 //表达式为空
@@ -172,7 +166,8 @@ public class RefPhase extends HelloBaseListener{
                         break;
                 }
                 if (!ctx.Type().getText().equals(tag)) {
-                    CheckSymbol.error(ctx.expr(0).start, "can not match type " + ctx.Type().getText() + " and " + tag);
+                    errorMessage += CheckSymbol.error(ctx.expr(0).start, "can not match type " + ctx.Type().getText() + " and " + tag);
+                    error = true;
                 }
             } else {
                 //类型未知?
@@ -217,7 +212,8 @@ public class RefPhase extends HelloBaseListener{
                             break;
                     }
                     if (!ctx.Type().getText().equals(tag)) {
-                        CheckSymbol.error(expr.start, "can not match type " + ctx.Type().getText() + " and " + tag);
+                        error = true;
+                        errorMessage += CheckSymbol.error(expr.start, "can not match type " + ctx.Type().getText() + " and " + tag);
                     }
                 } else {
                     //类型未知?
@@ -237,14 +233,16 @@ public class RefPhase extends HelloBaseListener{
             } else {
                 msg = name;
             }
-            CheckSymbol.error(ctx.getStart(), "no such variable:" + msg);
+            errorMessage += CheckSymbol.error(ctx.getStart(), "no such variable:" + msg);
+            error = true;
         }
         HelloParser.ExprContext expr = ctx.arrayValue().expr();
         if (expr != null) {
             Symbol.Type type = types.get(expr);
             if (type != null) {
                 if (type != Symbol.Type.INT) {
-                    CheckSymbol.error(expr.start, "array index can only be int type");
+                    errorMessage += CheckSymbol.error(expr.start, "array index can only be int type");
+                    error = true;
                 }
             } else {
                 //未知类型
@@ -256,7 +254,8 @@ public class RefPhase extends HelloBaseListener{
         String name = ctx.getText();
         Symbol var = currentScope.resolve(name);
         if (var == null) {
-            CheckSymbol.error(ctx.getStart(), "no such variable:" + name);
+            errorMessage += CheckSymbol.error(ctx.getStart(), "no such variable:" + name);
+            error = true;
         }
     }
 

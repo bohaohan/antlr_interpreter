@@ -8,11 +8,10 @@ import org.antlr.v4.runtime.Token;
  */
 public class CheckSymbol {
 
-    public static void error(Token t, String msg) {
-        System.err.printf("line %d:%d %s\n", t.getLine(),
+    public static String error(Token t, String msg) {
+        String str = String.format("line %d:%d %s\n", t.getLine(),
                 t.getCharPositionInLine(), msg);
+        return str;
     }
-
-//    public static void matchError(Token t,)
 
 }

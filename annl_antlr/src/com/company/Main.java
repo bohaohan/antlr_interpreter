@@ -13,6 +13,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 //	 write your code here
+        String errorMessage;
         InputStream input1 = null;
         try {
             input1 = new FileInputStream("/Users/qm/IdeaProjects/CMM/antlr_interpreter/annl_antlr/测试脚本/test5_IF-ELSE.cmm");
@@ -30,6 +31,12 @@ public class Main {
         walker.walk(def, tree);
         RefPhase ref = new RefPhase(def.globals, def.scopes, def.types);
         walker.walk(ref, tree);
+        errorMessage = ref.errorMessage;
+        if (ref.error) {
+            //停止
+        } else {
+            //继续visitor
+        }
      }
 
 }

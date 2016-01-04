@@ -136,7 +136,7 @@ public class DefPhase extends HelloBaseListener {
     }
 
     public void exitProgram(HelloParser.ProgramContext ctx) {
-        System.out.println(globals);
+
     }
 
     public void enterStmtBlock(HelloParser.StmtBlockContext ctx) {
@@ -146,7 +146,6 @@ public class DefPhase extends HelloBaseListener {
 
     public void exitStmtBlock(HelloParser.StmtBlockContext ctx) {
         currentScope = currentScope.getEnclosingScope();
-        System.out.println(currentScope);
     }
 
 
@@ -157,7 +156,6 @@ public class DefPhase extends HelloBaseListener {
 
     public void exitWhileStmt(HelloParser.WhileStmtContext ctx) {
         currentScope = currentScope.getEnclosingScope();
-        System.out.println(currentScope);
     }
 
     public void enterForStmt(HelloParser.ForStmtContext ctx) {
@@ -167,23 +165,8 @@ public class DefPhase extends HelloBaseListener {
 
     public void exitForStmt(HelloParser.ForStmtContext ctx) {
         currentScope = currentScope.getEnclosingScope();
-        System.out.println(currentScope);
 
     }
-
-//    expr: expr op=('*'|'/') expr # MulDiv
-//    | expr op=('+'|'-') expr # AddSub
-//    | ('-')?INT # int
-//    | ('-')?DOUBLE # double
-//    | CHAR #char
-//    | value # ex\\\\\\\\\\
-//
-// pValue
-//    | '(' expr ')' # parens
-
-//    varDecl : Type (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))? Semi;
-//    listVar : Type sub_var (Comma sub_var)+ Semi;
-//    sub_var : (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?;
 
     public void saveType(ParserRuleContext ctx, Symbol.Type type) {
         types.put(ctx, type);
@@ -196,7 +179,6 @@ public class DefPhase extends HelloBaseListener {
         }
         Symbol.Type type;
         Symbol var = currentScope.resolve(name);
-//        System.out.println(var.type);
         if (var != null) {
             switch (var.type) {
                 case BOOL_LIST:
