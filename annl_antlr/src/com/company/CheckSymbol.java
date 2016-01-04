@@ -13,8 +13,6 @@ public class CheckSymbol {
                 t.getCharPositionInLine(), msg);
     }
 
-    public static void checkExpr(HelloParser.ExprContext ctx, Symbol.Type type) {
-
-    }
+//    public static void matchError(Token t,)
 
 }

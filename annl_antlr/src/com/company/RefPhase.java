@@ -4,6 +4,7 @@ import gen.HelloBaseListener;
 import gen.HelloParser;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -15,10 +16,12 @@ public class RefPhase extends HelloBaseListener{
     GlobalScope globals;
     Scope currentScope;
     Stack<Symbol.Type> stack = new Stack<Symbol.Type>();
+    ParseTreeProperty<Symbol.Type> types;
 
-    public RefPhase(GlobalScope globals, ParseTreeProperty<Scope> scopes) {
+    public RefPhase(GlobalScope globals, ParseTreeProperty<Scope> scopes, ParseTreeProperty<Symbol.Type> types) {
         this.globals = globals;
         this.scopes = scopes;
+        this.types = types;
     }
 
     public void enterProgram(HelloParser.ProgramContext ctx) {
@@ -61,8 +64,102 @@ public class RefPhase extends HelloBaseListener{
 //    listVar : Type sub_var (Comma sub_var)+ Semi;
 //    sub_var : (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?;
 
-    public void exitInt(HelloParser.IntContext ctx) {
-        stack.push();
+//    compare: expr (Relation expr)?;
+//    Relation : '>'|'<'|'>='|'<='|'=='|'!='|'<>';
+
+    public void exitCompare(HelloParser.CompareContext ctx) {
+        HelloParser.ExprContext exprL = ctx.expr(0);
+        HelloParser.ExprContext exprR;
+        if (ctx.expr().size() > 1) {
+            exprR = ctx.expr(1);
+        } else {
+            if (types.get(exprL) != Symbol.Type.BOOL) {
+                CheckSymbol.error(ctx.expr(0).start, "variable must be bool type");
+            }
+        }
+    }
+
+    public void exitVarDecl(HelloParser.VarDeclContext ctx) {
+        Symbol.Type type;
+        String tag;
+        if (ctx.expr() != null) {
+            type = types.get(ctx.expr(0));
+            if (type != null) {
+                //比较类别,不同就报错
+                switch (type) {
+                    case BOOL:
+                        tag = "bool";
+                        break;
+                    case REAL:
+                        tag = "real";
+                        break;
+                    case CHAR:
+                        tag = "char";
+                        break;
+                    case INT:
+                        tag = "int";
+                        break;
+                    case DOUBLE:
+                        tag = "bool";
+                        break;
+                    default:
+                        tag = "unknown";
+                        break;
+                }
+                if (!ctx.Type().getText().equals(tag)) {
+                    CheckSymbol.error(ctx.expr(0).start, "can not match type " + ctx.Type().getText() + " and " + tag);
+                }
+            } else {
+                //类型未知?
+            }
+        }
+    }
+
+    public void exitListVar(HelloParser.ListVarContext ctx) {
+        String tag;
+        Symbol.Type type;
+        List sub_varList = ctx.sub_var();
+        if (sub_varList == null) return;
+        for (int i=0; i<sub_varList.size(); i++) {
+            HelloParser.Sub_varContext sub = (HelloParser.Sub_varContext) sub_varList.get(i);
+            if (sub == null) continue;
+            List exprList = sub.expr();
+            if (exprList == null) return;
+            for (int j=0; j<exprList.size(); j++) {
+                HelloParser.ExprContext expr = (HelloParser.ExprContext) exprList.get(j);
+                if (expr == null) continue;
+                type = types.get(expr);
+                if (type != null) {
+                    //比较类别,不同就报错
+                    switch (type) {
+                        case BOOL:
+                            tag = "bool";
+                            break;
+                        case REAL:
+                            tag = "real";
+                            break;
+                        case CHAR:
+                            tag = "char";
+                            break;
+                        case INT:
+                            tag = "int";
+                            break;
+                        case DOUBLE:
+                            tag = "bool";
+                            break;
+                        default:
+                            tag = "unknown";
+                            break;
+                    }
+                    if (!ctx.Type().getText().equals(tag)) {
+                        CheckSymbol.error(expr.start, "can not match type " + ctx.Type().getText() + " and " + tag);
+                    }
+                } else {
+                    //类型未知?
+                }
+                tag = null;
+            }
+        }
     }
 
     public void exitValAV(HelloParser.ValAVContext ctx) {
@@ -76,6 +173,17 @@ public class RefPhase extends HelloBaseListener{
                 msg = name;
             }
             CheckSymbol.error(ctx.getStart(), "no such variable:" + msg);
+        }
+        HelloParser.ExprContext expr = ctx.arrayValue().expr();
+        if (expr != null) {
+            Symbol.Type type = types.get(expr);
+            if (type != null) {
+                if (type != Symbol.Type.INT) {
+                    CheckSymbol.error(expr.start, "array index can only be int type");
+                }
+            } else {
+                //未知类型
+            }
         }
     }
 
