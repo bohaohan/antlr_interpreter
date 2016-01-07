@@ -7,7 +7,11 @@ import com.company.Variable;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
+import javax.swing.text.BadLocationException;
+import javax.xml.soap.Text;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -19,7 +23,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
     GlobalScope globals;
     Scope currentScope;
-
+    String errorMessage = "";
+    boolean hasError = false;
 
     void saveScope(ParserRuleContext ctx, Scope s) {
         scopes.put(ctx, s);
@@ -61,13 +66,14 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             value = null;
         }
         try {
+            String d = ctx.value().getChild(0).getChild(0).getText();
 //            System.out.println(ctx.value().getChild(0).getChild(2).getText());
             if (ctx.value().getChild(0).getChild(1).getText().equals("[")) {
                 if (!ctx.value().getChild(0).getChild(2).getText().equals("]")) {
                     int num = Integer.valueOf(visit(ctx.value().getChild(0).getChild(2)).getValue());
-//                    System.out.println(num);
+                    currentScope.define(new Variable(String.valueOf(num), "arrayp", d));
+
                     for (int i = 0; i < num; i++) {
-                        String d = ctx.value().getChild(0).getChild(0).getText();
                         try {
                             Variable variable = new Variable();
                             if (type.equals("double")){
@@ -106,8 +112,11 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 } else {
 //                    System.out.println("heyhey");
                     int num = ctx.expr().size();
+//                    System.out.println(num);
+                    currentScope.define(new Variable(String.valueOf(num), "arrayp", d));
+//                    Variable var = (Variable) currentScope.resolve(d);
+//                    System.out.println((var.getType()));
                     for (int i = 0; i < num ; i++){
-                        String d = ctx.value().getChild(0).getChild(0).getText();
                         try {
                             Variable variable = new Variable();
                             if (type.equals("double")){
@@ -300,8 +309,13 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //        String id = ctx.value(0).getText(); // id is left-hand side of '='
         String id = visit(ctx.value()).getId();
 //        if (!memory.containsKey(id)){
-        if (currentScope.resolve(id) == null){
-            System.out.println("ID not defined " + id);
+//        if (currentScope.resolve(id) == null){
+//            System.out.println("ID not defined " + id);
+//            return null;
+//        }
+        if (!hasError && currentScope.resolve(id) == null){
+            hasError = true;
+            logError("Variable " + id + " does not exit! " + ctx.getText());
             return null;
         }
 //        id = String.valueOf(Double.valueOf(id).intValue());
@@ -331,8 +345,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         a.setId(id);
 
 //        if (!memory.containsKey(id))
-        if (currentScope.resolve(id) == null)
-            System.out.println("ID not defined " + id);
+//        if (currentScope.resolve(id) == null)
+//            System.out.println("ID not defined " + id);
 //        else
 //            currentScope.define(a);
 //            memory.put(id, a);
@@ -343,22 +357,47 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitArrayValue(HelloParser.ArrayValueContext ctx) {
         String varType = "array";
         Variable var = new Variable();
-        var.setVarType(varType);
-        String subId = ctx.getChild(0).getText();
-        String id = "";
-//        System.out.println(ctx.getChildCount());
-        if (ctx.getChildCount()>3) {
-            String value = visit(ctx.expr()).getValue();
-            int va = Double.valueOf(value).intValue();
-            if (va < 0) {
-                System.out.println("Out of boundry");
+        if (!hasError){
+            var.setVarType(varType);
+            String subId = ctx.getChild(0).getText();
+            String id = "";
+    //        System.out.println(subId);
+            Variable arr = (Variable) currentScope.resolve(subId);
+    //        System.out.println(subId);
+
+    //        if (arr == null) {
+    //            hasError = true;
+    //            logError("Variable"+ subId +" out of boundry! " + ctx.getText());
+    //        }
+    //        int length = Integer.parseInt(arr.getVarType());
+    //        System.out.println(ctx.getChildCount());
+            if (ctx.getChildCount()>3) {
+                String value = visit(ctx.expr()).getValue();
+                int va = Double.valueOf(value).intValue();
+    //            if (va < 0 || va >(length-1)) {
+                if (arr != null && arr.getType().equals("arrayp")){
+    //                System.out.print(arr.getType());
+                    int length = Integer.parseInt(arr.getVarType());
+                    if (va > length -1){
+                        hasError = true;
+                        logError("Array Index out of boundry! " + ctx.getText());
+                        System.out.println("Out of boundry");
+                        return null;
+                    }
+                }
+                if (va < 0) {
+                    hasError = true;
+                    logError("Array Index out of boundry! " + ctx.getText());
+                    System.out.println("Out of boundry");
+                    return null;
+                }
+                value = String.valueOf(va);
+                id = subId + "[" + value + "]";
+            } else {
+                id = subId;
             }
-            value = String.valueOf(va);
-            id = subId + "[" + value + "]";
-        } else {
-            id = subId;
+            var.setId(id);
         }
-        var.setId(id);
 //        System.out.println(id);
         return var;
     }
@@ -366,8 +405,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitValAV(HelloParser.ValAVContext ctx) {
         Variable var = new Variable();
         Variable result = visit(ctx.arrayValue());
-        var.setId(result.getId());
-        var.setVarType(result.getVarType());
+        if(!hasError) {
+            var.setId(result.getId());
+            var.setVarType(result.getVarType());
+        }
 //        System.out.println(var.getId());
         return var;
     }
@@ -450,8 +491,13 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //        if ( memory.containsKey(id) ) {
 //            return memory.get(id);
 //        }
-        if (currentScope.resolve(id) != null) {
-            return (Variable)currentScope.resolve(id);
+        if (!hasError){
+            if (currentScope.resolve(id) != null) {
+                return (Variable)currentScope.resolve(id);
+            } else {
+                hasError = true;
+                logError("Variable " + id + " does not exist! " + ctx.getText());
+            }
         }
         return null;
     }
@@ -466,7 +512,14 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
             Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
             resultm = String.valueOf(left * right);
-            resultd = String.valueOf(left / right);
+            if (right.equals(0.0)){
+                hasError = true;
+                String msg = "Can not divide by 0! " + ctx.getParent().getText();
+                logError(msg);
+                resultd = null;
+            }else {
+                resultd = String.valueOf(left / right);
+            }
             var.setType("double");
         } else if (visit(ctx.expr(0)).getType().equals("int") && visit(ctx.expr(1)).getType().equals("int")) {
             Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
@@ -474,7 +527,16 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             Integer lt = left.intValue();
             Integer rt = right.intValue();
             resultm = String.valueOf(lt * rt);
-            resultd = String.valueOf(lt / rt);
+            if (rt.equals(0)) {
+                hasError = true;
+                String msg = "Can not divide by 0! " + ctx.getParent().getText();
+                logError(msg);
+//                System.out.println(errorMessage);
+
+                resultd = null;
+            }else {
+                resultd = String.valueOf(lt / rt);
+            }
             var.setType("int");
         }
 //        System.out.println(resultm + resultd);
@@ -791,17 +853,44 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     @Override
     public Variable visitWriteStmt(HelloParser.WriteStmtContext ctx) {
         Variable var = visit(ctx.getChild(2));
-
+        if (!hasError){
 //        System.out.print(var.getVarType());
-        if(var.getVarType()!= null && var.getVarType().equals("const")) {
-            System.out.println(var.getValue());
-        } else {
-            System.out.print(var.getId());
-            System.out.print(": ");
-//            System.out.println(memory.get(var.getId()).getValue());
-            System.out.println(((Variable)currentScope.resolve(var.getId())).getValue());
+            if(var.getVarType()!= null && var.getVarType().equals("const")) {
+                System.out.println(var.getValue());
+
+                TextEditorDemo te = TextEditorDemo.getInstance();
+                RSyntaxTextArea ta = te.getOutputAre();
+                ta.append(var.getValue()+"\n");
+
+            } else {
+                TextEditorDemo te = TextEditorDemo.getInstance();
+                RSyntaxTextArea ta = te.getOutputAre();
+                if (currentScope.resolve(var.getId())==null){
+                    hasError = true;
+                    logError("Variable " + var.getId() + " does not exit! " + ctx.getText());
+                    return null;
+                }
+                System.out.print(var.getId());
+                ta.append(var.getId());
+                System.out.print(": ");
+                ta.append(": ");
+    //            System.out.println(memory.get(var.getId()).getValue());
+                System.out.println(((Variable)currentScope.resolve(var.getId())).getValue());
+                ta.append(((Variable)currentScope.resolve(var.getId())).getValue()+"\n");
+            }
         }
         return visitChildren(ctx);
+    }
+    public void logError(String msg) {
+        TextEditorDemo te = TextEditorDemo.getInstance();
+        RSyntaxTextArea ta = te.getOutputAre();
+        ta.append("Error: "+msg+"\n");
+        try {
+            ta.addLineHighlight(ta.getLineCount() - 2, Color.RED);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+//        System.out.println(ta.getLineCount());
     }
     @Override
     public Variable visitReadStmt(HelloParser.ReadStmtContext ctx) {
@@ -809,9 +898,13 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         String t = sc.next();
         Variable v = visit(ctx.getChild(2));
         Variable var = (Variable) currentScope.resolve(v.getId());
+        if (!hasError && var == null){
+            hasError = true;
+            logError("Variable " + v.getId() + " does not exit! " + ctx.getText());
+        }
 //        var.setValue(t);
 //        System.out.println(var.getId());
-        if (var.getType() != null) {
+        if (!hasError && var.getType() != null) {
             if (var.getType().equals("double")) {
                 var.setValue(String.valueOf(Double.valueOf(t)));
             } else if(var.getType().equals("int")) {
