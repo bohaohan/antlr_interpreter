@@ -16,7 +16,7 @@ public class Main {
         String errorMessage;
         InputStream input1 = null;
         try {
-            input1 = new FileInputStream("/Users/qm/IdeaProjects/CMM/antlr_interpreter/annl_antlr/测试脚本/test5_IF-ELSE.cmm");
+            input1 = new FileInputStream("/Users/qm/IdeaProjects/CMM/antlr_interpreter/annl_antlr/测试脚本/test.cmm");
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
