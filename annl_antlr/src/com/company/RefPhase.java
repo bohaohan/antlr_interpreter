@@ -119,7 +119,22 @@ public class RefPhase extends HelloBaseListener{
                 typeName = "int";
                 break;
             case DOUBLE:
+                typeName = "double";
+                break;
+            case BOOL_LIST:
                 typeName = "bool";
+                break;
+            case REAL_LIST:
+                typeName = "real";
+                break;
+            case CHAR_LIST:
+                typeName = "char";
+                break;
+            case INT_LIST:
+                typeName = "int";
+                break;
+            case DOUBLE_LIST:
+                typeName = "double";
                 break;
             default:
                 typeName = "unknown";
