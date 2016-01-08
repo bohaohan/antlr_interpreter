@@ -151,7 +151,7 @@ public class RefPhase extends HelloBaseListener{
             if (exprL != null && exprR != null) {
                 Symbol.Type typeL = types.get(exprL);
                 Symbol.Type typeR = types.get(exprR);
-                if (typeL == typeR && ((typeL == Symbol.Type.BOOL && typeR == Symbol.Type.BOOL) || (typeL == Symbol.Type.INT && typeR == Symbol.Type.INT))) {
+                if (typeL == typeR && ((typeL == Symbol.Type.BOOL && typeR == Symbol.Type.BOOL) || ((typeL == Symbol.Type.INT || typeL == Symbol.Type.DOUBLE || typeL == Symbol.Type.REAL) && (typeR == Symbol.Type.INT || typeR == Symbol.Type.DOUBLE || typeR == Symbol.Type.REAL)))) {
                     // 类型符合
                 } else {
                     error = true;
@@ -161,7 +161,6 @@ public class RefPhase extends HelloBaseListener{
                 // 表达式为空
             }
         } else {
-//            System.out.println(types.get(exprL));
             if (exprL != null) {
                 if (types.get(exprL) == Symbol.Type.BOOL || types.get(exprL) == Symbol.Type.INT) {
                     // 类型符合

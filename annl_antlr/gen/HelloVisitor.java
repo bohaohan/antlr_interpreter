@@ -182,6 +182,12 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBool(HelloParser.BoolContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link HelloParser#string}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitString(HelloParser.StringContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link HelloParser#eLSE}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
