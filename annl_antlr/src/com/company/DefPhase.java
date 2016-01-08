@@ -263,6 +263,14 @@ public class DefPhase extends HelloBaseListener {
         }
     }
 
+    public void exitExpBool(HelloParser.ExpBoolContext ctx) {
+        if (ctx.getText().equals("true") || ctx.getText().equals("false")) {
+            saveType(ctx, Symbol.Type.BOOL);
+        } else {
+            saveType(ctx, Symbol.Type.INVALID);
+        }
+    }
+
 
 
 }
