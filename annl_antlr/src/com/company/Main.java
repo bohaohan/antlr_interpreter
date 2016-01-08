@@ -14,26 +14,21 @@ import gen.HelloBaseVisitor;
 
 import static org.antlr.v4.runtime.tree.Trees.getNodeText;
 
-public class Main {
+public class Main extends Thread {
+    ParseTree tree = null;
+    public void setInput(ParseTree tree){
+        this.tree = tree;
+    }
+    public Main(){}
+    public void run(){
 
-    public static void main(String[] args) throws IOException {
-	// write your code here
-        InputStream input1 = null;
-        try {
-            input1 = new FileInputStream("/Users/bohaohan/iss/编译原理/解释器/测试脚本/error2_array2.cmm");
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        ANTLRInputStream input = new ANTLRInputStream(input1);
-
-        HelloLexer lexer = new HelloLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        HelloParser parser = new HelloParser(tokens);
-        ParseTreeWalker walker = new ParseTreeWalker();
+//        HelloLexer lexer = new HelloLexer(input);
+//        CommonTokenStream tokens = new CommonTokenStream(lexer);
+//        HelloParser parser = new HelloParser(tokens);
+//        ParseTreeWalker walker = new ParseTreeWalker();
+////        ParseTree tree = parser.program();
+////        System.out.println(tree.toStringTree(parser));
 //        ParseTree tree = parser.program();
-//        System.out.println(tree.toStringTree(parser));
-        ParseTree tree = parser.program();
 //        System.out.println(parser.errorMessage);
 //        parser.getErrorHeader()
 
@@ -43,6 +38,22 @@ public class Main {
 //        CMMListener listener = new CMMListener();
         CMMVisitor loader = new CMMVisitor();
         loader.visit(tree);
+    }
+    private boolean suspend = false;
+    private String control = "";
+    public void setSuspend(boolean suspend) {
+        if (!suspend) {
+            synchronized (control) {
+                control.notifyAll();
+            }
+        }
+        this.suspend = suspend;
+    }
+
+    public static void main(String[] args) throws IOException {
+	// write your code here
+
+
 
 
     }

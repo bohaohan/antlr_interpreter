@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.xml.soap.Text;
 import java.awt.*;
@@ -24,7 +25,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     GlobalScope globals;
     Scope currentScope;
     boolean hasError = false;
-
+    static WaitInput wi = new WaitInput();
     void saveScope(ParserRuleContext ctx, Scope s) {
         scopes.put(ctx, s);
     }
@@ -850,14 +851,36 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     }
     @Override
     public Variable visitReadStmt(HelloParser.ReadStmtContext ctx) {
-        Scanner sc=new Scanner(System.in);
-        String t = sc.next();
+//        Scanner sc=new Scanner(System.in);
+//        TextEditorDemo.main.setSuspend(true);
+//        try {
+//            TextEditorDemo.main.wait();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         Variable v = visit(ctx.getChild(2));
         Variable var = (Variable) currentScope.resolve(v.getId());
         if (!hasError && var == null){
             hasError = true;
             logError("Variable " + v.getId() + " does not exit! " + ctx.getText());
         }
+        JOptionPane jp = new JOptionPane();
+        ImageIcon icon = new ImageIcon("img/input.png");
+        jp.setIcon(icon);
+        
+        String msg = "Input value :";
+        if (var != null && var.getId() != null) {
+            msg = "Input value for " + var.getId() + " :";
+        }
+        String t = "";
+        if (!hasError)
+            t = jp.showInputDialog(null, msg);
+
+//        TextEditorDemo.waitI();
+//        String t = TextEditorDemo.ri;
+
+//        String t = sc.next();
+
 //        var.setValue(t);
 //        System.out.println(var.getId());
         if (!hasError && var.getType() != null) {
@@ -873,6 +896,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 var.setValue(String.valueOf(Double.valueOf(t)));
             }
         }
+        TextEditorDemo.ri = "";
         return visitChildren(ctx);
     }
 }
