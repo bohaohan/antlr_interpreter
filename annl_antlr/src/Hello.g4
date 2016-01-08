@@ -48,7 +48,7 @@ whileStmt : WHILE '(' compare ')' stmtBlock;
 forStmt : FOR '(' (assignStmt|varDecl) compare Semi assignStmt ')' stmtBlock;
 breakStmt : BREAK ';';
 readStmt : READ '(' expr ')' Semi;
-writeStmt : WRITE '(' expr ')' Semi;
+writeStmt : WRITE '(' (string|expr) ')' Semi;
 
 assignStmt : (value) Equal (expr) ;
 
@@ -69,6 +69,7 @@ DOUBLE : ('-'|'+')? NUM '.' NUM;
 fragment LETTER: [a-zA-Z];
 NEWLINE : '\r'? '\n' ;
 bool: 'true' | 'false';
+string : '\"' (.)? (('\\').)* '\"';
 INT :  NUM;
 CHAR: '\'' (LETTER|NUM) '\'';
 SL_COMMENT :   '//' .*? (('\n')|EOF)  -> skip;
