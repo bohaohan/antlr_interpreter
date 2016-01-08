@@ -20,10 +20,17 @@ import java.awt.event.MouseListener;
 import java.io.*;
 
 public class TextEditorDemo extends JFrame {
-
+    public static String ri = "";
     private static TextEditorDemo single = null;
     PrintStream redirect = new PrintStream(new RedirectOutputStream());
-
+    public static Main main = new Main();
+    public static void waitI(){
+        try {
+            main.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     public static TextEditorDemo getInstance() {
         if (single == null) {
             single = new TextEditorDemo();
@@ -79,11 +86,13 @@ public class TextEditorDemo extends JFrame {
                 walker.walk(ref, tree);
                 if (ref.error) {
                     //停止
-                    //?????????
                 } else {
                     //继续visitor
-                    CMMVisitor loader = new CMMVisitor();
-                    loader.visit(tree);
+//                    CMMVisitor loader = new CMMVisitor();
+//                    loader.visit(tree);
+//                    Main main = new Main(stream);
+                    main.setInput(tree);
+                    main.run();
                 }
             }
 
@@ -134,17 +143,20 @@ public class TextEditorDemo extends JFrame {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyChar() != '\n'){
-                    if (e.getKeyCode() == 8 && result.length() > 0) {
-                        result = result.substring(0, result.length()-1);
-                    }else {
-                        result += e.getKeyChar();
-                    }
-                } else {
-                    String re = result;
-                    result = "";
-                    System.out.println(re);
-                }
+//                if (e.getKeyChar() != '\n'){
+//                    if (e.getKeyCode() == 8 && result.length() > 0) {
+//                        result = result.substring(0, result.length()-1);
+//                    }else {
+//                        result += e.getKeyChar();
+//                    }
+//                } else {
+//                    String re = result;
+//                    result = "";
+//                    TextEditorDemo.ri = re;
+////                    TextEditorDemo.main.setSuspend(false);
+//                    CMMVisitor.wi.stop();
+////                    TextEditorDemo.main.notify();
+//                }
             }
 
             @Override
