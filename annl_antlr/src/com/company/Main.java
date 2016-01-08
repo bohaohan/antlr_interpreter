@@ -31,7 +31,6 @@ public class Main {
         walker.walk(def, tree);
         RefPhase ref = new RefPhase(def.globals, def.scopes, def.types);
         walker.walk(ref, tree);
-        errorMessage = ref.errorMessage;
         if (ref.error) {
             //停止
         } else {

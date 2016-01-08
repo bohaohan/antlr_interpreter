@@ -20,7 +20,6 @@ public class RefPhase extends HelloBaseListener{
     Stack<Symbol.Type> stack = new Stack<Symbol.Type>();
     ParseTreeProperty<Symbol.Type> types;
     boolean error = false;
-    String errorMessage;
 
     public RefPhase(GlobalScope globals, ParseTreeProperty<Scope> scopes, ParseTreeProperty<Symbol.Type> types) {
         this.globals = globals;
@@ -77,7 +76,7 @@ public class RefPhase extends HelloBaseListener{
                     typeL = checkType(symbol.type);
                     typeR = checkType(type);
                     error = true;
-                    errorMessage += CheckSymbol.error(expr.start, "can not match type " + typeL + " and " + typeR);
+                    CheckSymbol.error(expr.start, "can not match type " + typeL + " and " + typeR);
                 }
             }
         }
@@ -120,7 +119,7 @@ public class RefPhase extends HelloBaseListener{
                     // 类型符合
                 } else {
                     error = true;
-                    errorMessage += CheckSymbol.error(exprL.start, "variable must be bool type");
+                    CheckSymbol.error(exprL.start, "variable must be bool type");
                 }
             } else {
                 // 表达式为空
@@ -132,7 +131,7 @@ public class RefPhase extends HelloBaseListener{
                     // 类型符合
                 } else {
                     error = true;
-                    errorMessage += CheckSymbol.error(ctx.expr(0).start, "variable must be bool type");
+                    CheckSymbol.error(ctx.expr(0).start, "variable must be bool type");
                 }
             } else {
                 //表达式为空
@@ -168,7 +167,7 @@ public class RefPhase extends HelloBaseListener{
                         break;
                 }
                 if (!ctx.Type().getText().equals(tag)) {
-                    errorMessage += CheckSymbol.error(ctx.expr(0).start, "can not match type " + ctx.Type().getText() + " and " + tag);
+                    CheckSymbol.error(ctx.expr(0).start, "can not match type " + ctx.Type().getText() + " and " + tag);
                     error = true;
                 }
             } else {
@@ -215,7 +214,7 @@ public class RefPhase extends HelloBaseListener{
                     }
                     if (!ctx.Type().getText().equals(tag)) {
                         error = true;
-                        errorMessage += CheckSymbol.error(expr.start, "can not match type " + ctx.Type().getText() + " and " + tag);
+                        CheckSymbol.error(expr.start, "can not match type " + ctx.Type().getText() + " and " + tag);
                     }
                 } else {
                     //类型未知?
@@ -235,7 +234,7 @@ public class RefPhase extends HelloBaseListener{
             } else {
                 msg = name;
             }
-            errorMessage += CheckSymbol.error(ctx.getStart(), "no such variable:" + msg);
+            CheckSymbol.error(ctx.getStart(), "no such variable:" + msg);
             error = true;
         }
         HelloParser.ExprContext expr = ctx.arrayValue().expr();
@@ -243,7 +242,7 @@ public class RefPhase extends HelloBaseListener{
             Symbol.Type type = types.get(expr);
             if (type != null) {
                 if (type != Symbol.Type.INT) {
-                    errorMessage += CheckSymbol.error(expr.start, "array index can only be int type");
+                    CheckSymbol.error(expr.start, "array index can only be int type");
                     error = true;
                 }
             } else {
@@ -256,7 +255,7 @@ public class RefPhase extends HelloBaseListener{
         String name = ctx.getText();
         Symbol var = currentScope.resolve(name);
         if (var == null) {
-            errorMessage += CheckSymbol.error(ctx.getStart(), "no such variable:" + name);
+            CheckSymbol.error(ctx.getStart(), "no such variable:" + name);
             error = true;
         }
     }

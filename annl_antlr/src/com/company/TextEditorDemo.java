@@ -17,13 +17,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class TextEditorDemo extends JFrame {
 
     private static TextEditorDemo single = null;
+    PrintStream redirect = new PrintStream(new RedirectOutputStream());
 
     public static TextEditorDemo getInstance() {
         if (single == null) {
@@ -42,6 +41,9 @@ public class TextEditorDemo extends JFrame {
         return rt;
     }
     public TextEditorDemo() {
+        System.setOut(redirect);
+        System.setErr(redirect);
+
 //        this.setLayout(new FlowLayout());
         JPanel cp = new JPanel(new BorderLayout());
         JPanel buttons = new JPanel(new BorderLayout());
@@ -69,11 +71,20 @@ public class TextEditorDemo extends JFrame {
                 HelloLexer lexer = new HelloLexer(input);
                 CommonTokenStream tokens = new CommonTokenStream(lexer);
                 HelloParser parser = new HelloParser(tokens);
-//                ParseTreeWalker walker = new ParseTreeWalker();
+                ParseTreeWalker walker = new ParseTreeWalker();
                 ParseTree tree = parser.program();
-                CMMVisitor loader = new CMMVisitor();
-                loader.visit(tree);
-
+                DefPhase def = new DefPhase();
+                walker.walk(def, tree);
+                RefPhase ref = new RefPhase(def.globals, def.scopes, def.types);
+                walker.walk(ref, tree);
+                if (ref.error) {
+                    //停止
+                    //?????????
+                } else {
+                    //继续visitor
+                    CMMVisitor loader = new CMMVisitor();
+                    loader.visit(tree);
+                }
             }
 
             @Override
@@ -163,6 +174,24 @@ public class TextEditorDemo extends JFrame {
                 td.setVisible(true);
             }
         });
+    }
+
+    public class RedirectOutputStream extends OutputStream {
+        public void write(int arg0) throws IOException {
+            // 写入指定的字节，忽略
+        }
+
+        public void write(byte data[]) throws IOException{
+            // 追加一行字符串
+            getOutputAre().append(new String(data));
+        }
+
+        public void write(byte data[], int off, int len) throws IOException {
+            // 追加一行字符串中指定的部分，这个最重要
+            getOutputAre().append(new String(data, off, len));
+            // 移动TextArea的光标到最后，实现自动滚动
+            getOutputAre().setCaretPosition(getOutputAre().getText().length());
+        }
     }
 
 }
