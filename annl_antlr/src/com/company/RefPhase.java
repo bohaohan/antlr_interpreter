@@ -201,10 +201,14 @@ public class RefPhase extends HelloBaseListener{
                         tag = "unknown";
                         break;
                 }
-                if (!ctx.Type().getText().equals(tag)) {
+                String leftTag = ctx.Type().getText();
+                if (((leftTag.equals("real") || leftTag.equals("int") || leftTag.equals("double")) && (tag.equals("real") || tag.equals("int") || tag.equals("double")))|| (!leftTag.equals("unknown") && !tag.equals("unknown") && leftTag.equals(tag))) {
+
+                } else {
                     CheckSymbol.error(ctx.expr(0).start, "can not match type " + ctx.Type().getText() + " and " + tag);
                     error = true;
                 }
+
             } else {
                 //类型未知?
             }
