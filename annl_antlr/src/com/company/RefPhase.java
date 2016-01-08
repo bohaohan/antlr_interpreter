@@ -65,30 +65,9 @@ public class RefPhase extends HelloBaseListener{
         }
         symbol = currentScope.resolve(name);
         Symbol.Type type = types.get(expr);
-
         if (symbol != null && type!= null) {
-            Symbol.Type temp;
-            switch (symbol.type) {
-                case INT_LIST:
-                    temp = Symbol.Type.INT;
-                    break;
-                case BOOL_LIST:
-                    temp = Symbol.Type.BOOL;
-                    break;
-                case REAL_LIST:
-                    temp = Symbol.Type.REAL;
-                    break;
-                case CHAR_LIST:
-                    temp = Symbol.Type.CHAR;
-                    break;
-                case DOUBLE_LIST:
-                    temp = Symbol.Type.DOUBLE;
-                    break;
-                default:
-                    temp = symbol.type;
-            }
             if (symbol.type != type) {
-                if ((temp == Symbol.Type.INT || temp == Symbol.Type.DOUBLE || temp == Symbol.Type.REAL)
+                if ((symbol.type == Symbol.Type.INT || symbol.type == Symbol.Type.DOUBLE || symbol.type == Symbol.Type.REAL)
                         && (type == Symbol.Type.DOUBLE || type ==Symbol.Type.INT || type == Symbol.Type.REAL) ) {
 
                 } else {
@@ -246,10 +225,16 @@ public class RefPhase extends HelloBaseListener{
     }
 
     public void exitValAV(HelloParser.ValAVContext ctx) {
-        String name = ctx.arrayValue().ID().getText();
+        String name = ctx.getText().substring(0, ctx.getText().indexOf("["));
         Symbol var = currentScope.resolve(name);
         if (var == null) {
-            CheckSymbol.error(ctx.getStart(), "no such variable:" + name);
+            String msg;
+            if (name.contains("[")) {
+                msg = name.substring(0, 1);
+            } else {
+                msg = name;
+            }
+            CheckSymbol.error(ctx.getStart(), "no such variable:" + msg);
             error = true;
         }
         HelloParser.ExprContext expr = ctx.arrayValue().expr();
@@ -262,7 +247,6 @@ public class RefPhase extends HelloBaseListener{
                 }
             } else {
                 //未知类型
-                System.out.println(expr);
             }
         }
     }

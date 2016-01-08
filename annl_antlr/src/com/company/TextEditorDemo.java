@@ -79,7 +79,6 @@ public class TextEditorDemo extends JFrame {
                 walker.walk(ref, tree);
                 if (ref.error) {
                     //停止
-                    //?????????
                 } else {
                     //继续visitor
                     CMMVisitor loader = new CMMVisitor();
