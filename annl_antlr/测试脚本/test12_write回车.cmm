@@ -1,0 +1,4 @@
+bool a = true;
+if (a) {
+	write("this \n is \n a");
+}

@@ -1,0 +1,7 @@
+bool a = true;
+if (a) {
+	write("a is true");
+	if (true) {
+		write("true is true");
+	}
+}
