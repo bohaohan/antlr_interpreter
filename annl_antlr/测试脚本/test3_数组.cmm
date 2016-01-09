@@ -28,7 +28,6 @@ realArray[4] = 5 - 2 / (4.0 - 3) * 2.5 + 0.01;
 
 
 read(realArray[5]);
-realArray[5] = 3;
 
 //´òÓ¡Êý×é
 int x = 0;
