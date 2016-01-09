@@ -81,7 +81,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                                 Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
                                 String cT = visit(ctx.expr(i)).getType();
                                 if (!cT.equals("double") && !cT.equals("int")){
-                                    
+
                                 } else {
                                     variable.setValue(String.valueOf(dd));
                                 }
@@ -455,12 +455,15 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitMulDiv(HelloParser.MulDivContext ctx) {
         String resultm = "", resultd = new String();
         Variable var = new Variable();
-        if (visit(ctx.expr(0)).getType().equals("double") || visit(ctx.expr(1)).getType().equals("double")
-                || visit(ctx.expr(1)).getType().equals("real")|| visit(ctx.expr(1)).getType().equals("real")) {
+        String lType = visit(ctx.expr(0)).getType();
+        String rType = visit(ctx.expr(1)).getType();
+        if ((!hasError) && (lType.equals(rType) && lType.equals("double"))
+                || (lType.equals("int") && rType.equals("double"))
+                || (rType.equals("int") && lType.equals("double"))) {
             Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
             Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
             resultm = String.valueOf(left * right);
-            if (right.equals(0.0)){
+            if (right.equals(0.0) || (rType.equals("int") && right.intValue() == 0)){
                 hasError = true;
                 CheckSymbol.error(ctx.start, "Can not divide by 0! " + ctx.getParent().getText());
                 resultd = null;
@@ -468,7 +471,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 resultd = String.valueOf(left / right);
             }
             var.setType("double");
-        } else if (visit(ctx.expr(0)).getType().equals("int") && visit(ctx.expr(1)).getType().equals("int")) {
+        } else if ((!hasError) && visit(ctx.expr(0)).getType().equals("int") && visit(ctx.expr(1)).getType().equals("int")) {
             Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
             Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
             Integer lt = left.intValue();
@@ -482,6 +485,9 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 resultd = String.valueOf(lt / rt);
             }
             var.setType("int");
+        } else {
+            hasError = true;
+            CheckSymbol.error(ctx.start, "Can not divide " + lType + " with " + rType);
         }
         if ( ctx.op.getText().equals("*") ){
             var.setVarType("const");
@@ -499,9 +505,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         Variable var = new Variable();
         if (!hasError){
             String typeL = visit(ctx.expr(0)).getType();
-            String typeR = visit(ctx.expr(0)).getType();
-            if ((visit(ctx.expr(0)).getType().equals("double") || visit(ctx.expr(1)).getType().equals("double"))
-                    && (visit(ctx.expr(1)).getType().equals("real")|| visit(ctx.expr(1)).getType().equals("real"))) {
+            String typeR = visit(ctx.expr(1)).getType();
+            if ((visit(ctx.expr(0)).getType().equals("double") && visit(ctx.expr(1)).getType().equals("double"))
+                    || (typeL.equals("int") && typeR.equals("double"))
+                    || (typeR.equals("int") && typeL.equals("double")) ) {
                 Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
                 Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
                 resultm = String.valueOf(left - right);
@@ -526,13 +533,11 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                         ||(visit(ctx.expr(1)).getType() != null &&  visit(ctx.expr(1)).getType().equals("char")) ) {
                     hasError = true;
                     CheckSymbol.error(ctx.expr(0).start, "Can not add char! " + ctx.getParent().getText());
-    //                logError("Can not add char!" + ctx.getText());
                 }
                 if ((visit(ctx.expr(0)).getType() != null &&  visit(ctx.expr(0)).getType().equals("bool"))
                         ||(visit(ctx.expr(1)).getType() != null &&  visit(ctx.expr(1)).getType().equals("char")) ) {
                     hasError = true;
                     CheckSymbol.error(ctx.expr(0).start, "Can not add char! " + ctx.getParent().getText());
-    //                logError("Can not add bool!" + ctx.getText());
                 }
             }
             if ( ctx.op.getText().equals("+")) {
