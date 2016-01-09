@@ -86,6 +86,7 @@ public class RefPhase extends HelloBaseListener{
                     break;
                 default:
                     temp = symbol.type;
+                    break;
             }
             if (symbol.type != type) {
                 if ((temp == Symbol.Type.INT || temp == Symbol.Type.DOUBLE || temp == Symbol.Type.REAL)
@@ -151,7 +152,7 @@ public class RefPhase extends HelloBaseListener{
             if (exprL != null && exprR != null) {
                 Symbol.Type typeL = types.get(exprL);
                 Symbol.Type typeR = types.get(exprR);
-                if (typeL == typeR && ((typeL == Symbol.Type.BOOL && typeR == Symbol.Type.BOOL) || ((typeL == Symbol.Type.INT || typeL == Symbol.Type.DOUBLE || typeL == Symbol.Type.REAL) && (typeR == Symbol.Type.INT || typeR == Symbol.Type.DOUBLE || typeR == Symbol.Type.REAL)))) {
+                if (typeL == typeR || ((typeL == Symbol.Type.BOOL && typeR == Symbol.Type.BOOL) || ((typeL == Symbol.Type.INT || typeL == Symbol.Type.DOUBLE || typeL == Symbol.Type.REAL) && (typeR == Symbol.Type.INT || typeR == Symbol.Type.DOUBLE || typeR == Symbol.Type.REAL)))) {
                     // 类型符合
                 } else {
                     error = true;
@@ -177,40 +178,42 @@ public class RefPhase extends HelloBaseListener{
     public void exitVarDecl(HelloParser.VarDeclContext ctx) {
         Symbol.Type type;
         String tag;
-        if (ctx.expr() != null) {
-            type = types.get(ctx.expr(0));
-            if (type != null) {
-                //比较类别,不同就报错
-                switch (type) {
-                    case BOOL:
-                        tag = "bool";
-                        break;
-                    case REAL:
-                        tag = "real";
-                        break;
-                    case CHAR:
-                        tag = "char";
-                        break;
-                    case INT:
-                        tag = "int";
-                        break;
-                    case DOUBLE:
-                        tag = "bool";
-                        break;
-                    default:
-                        tag = "unknown";
-                        break;
-                }
-                String leftTag = ctx.Type().getText();
-                if (((leftTag.equals("real") || leftTag.equals("int") || leftTag.equals("double")) && (tag.equals("real") || tag.equals("int") || tag.equals("double")))|| (!leftTag.equals("unknown") && !tag.equals("unknown") && leftTag.equals(tag))) {
+        if (ctx.expr() != null && ctx.expr().size() != 0) {
+            for (int i=0; i<ctx.expr().size(); i++) {
+                type = types.get(ctx.expr(i));
+                if (type != null) {
+                    //比较类别,不同就报错
+                    switch (type) {
+                        case BOOL:
+                            tag = "bool";
+                            break;
+                        case REAL:
+                            tag = "real";
+                            break;
+                        case CHAR:
+                            tag = "char";
+                            break;
+                        case INT:
+                            tag = "int";
+                            break;
+                        case DOUBLE:
+                            tag = "double";
+                            break;
+                        default:
+                            tag = "unknown";
+                            break;
+                    }
+                    String leftTag = ctx.Type().getText();
+                    if (((leftTag.equals("real") || leftTag.equals("int") || leftTag.equals("double")) && (tag.equals("real") || tag.equals("int") || tag.equals("double")))|| (!leftTag.equals("unknown") && !tag.equals("unknown") && leftTag.equals(tag))) {
+
+                    } else {
+                        CheckSymbol.error(ctx.expr(0).start, "can not match type " + ctx.Type().getText() + " and " + tag);
+                        error = true;
+                    }
 
                 } else {
-                    CheckSymbol.error(ctx.expr(0).start, "can not match type " + ctx.Type().getText() + " and " + tag);
-                    error = true;
+                    //类型未知?
                 }
-
-            } else {
-                //类型未知?
             }
         }
     }
@@ -245,16 +248,21 @@ public class RefPhase extends HelloBaseListener{
                             tag = "int";
                             break;
                         case DOUBLE:
-                            tag = "bool";
+                            tag = "double";
                             break;
                         default:
                             tag = "unknown";
                             break;
                     }
-                    if (!ctx.Type().getText().equals(tag)) {
-                        error = true;
+                    String leftTag = ctx.Type().getText();
+                    if (((leftTag.equals("real") || leftTag.equals("int") || leftTag.equals("double")) && (tag.equals("real") || tag.equals("int") || tag.equals("double")))|| (!leftTag.equals("unknown") && !tag.equals("unknown") && leftTag.equals(tag))) {
+
+                    } else {
                         CheckSymbol.error(expr.start, "can not match type " + ctx.Type().getText() + " and " + tag);
+                        error = true;
                     }
+
+
                 } else {
                     //类型未知?
                 }

@@ -211,7 +211,20 @@ public class DefPhase extends HelloBaseListener {
         if (ctx.expr(0) != null && ctx.expr(1) != null) {
             if (types.get(ctx.expr(0)) != null && types.get(ctx.expr(1)) != null) {
                 if (types.get(ctx.expr(0)) != types.get(ctx.expr(1))) {
-                    saveType(ctx, Symbol.Type.INVALID);
+                    Symbol.Type lType = types.get(ctx.expr(0));
+                    Symbol.Type rType = types.get(ctx.expr(1));
+                    if ((lType == Symbol.Type.INT || lType == Symbol.Type.DOUBLE || lType == Symbol.Type.REAL) &&
+                            rType == Symbol.Type.INT || rType == Symbol.Type.DOUBLE || rType == Symbol.Type.REAL) {
+                        if (lType == Symbol.Type.DOUBLE || rType == Symbol.Type.DOUBLE) {
+                            saveType(ctx, Symbol.Type.DOUBLE);
+                        } else if (lType == Symbol.Type.REAL || rType == Symbol.Type.REAL) {
+                            saveType(ctx, Symbol.Type.REAL);
+                        } else {
+                            saveType(ctx, Symbol.Type.INT);
+                        }
+                    } else {
+                        saveType(ctx, Symbol.Type.INVALID);
+                    }
                 } else {
                     saveType(ctx, types.get(ctx.expr(0)));
                 }
@@ -227,7 +240,20 @@ public class DefPhase extends HelloBaseListener {
         if (ctx.expr(0) != null && ctx.expr(1) != null) {
             if (types.get(ctx.expr(0)) != null && types.get(ctx.expr(1)) != null) {
                 if (types.get(ctx.expr(0)) != types.get(ctx.expr(1))) {
-                    saveType(ctx, Symbol.Type.INVALID);
+                    Symbol.Type lType = types.get(ctx.expr(0));
+                    Symbol.Type rType = types.get(ctx.expr(1));
+                    if ((lType == Symbol.Type.INT || lType == Symbol.Type.DOUBLE || lType == Symbol.Type.REAL) &&
+                            rType == Symbol.Type.INT || rType == Symbol.Type.DOUBLE || rType == Symbol.Type.REAL) {
+                        if (lType == Symbol.Type.DOUBLE || rType == Symbol.Type.DOUBLE) {
+                            saveType(ctx, Symbol.Type.DOUBLE);
+                        } else if (lType == Symbol.Type.REAL || rType == Symbol.Type.REAL) {
+                            saveType(ctx, Symbol.Type.REAL);
+                        } else {
+                            saveType(ctx, Symbol.Type.INT);
+                        }
+                    } else {
+                        saveType(ctx, Symbol.Type.INVALID);
+                    }
                 } else {
                     saveType(ctx, types.get(ctx.expr(0)));
                 }
