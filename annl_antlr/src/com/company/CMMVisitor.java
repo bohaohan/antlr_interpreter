@@ -79,7 +79,12 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                             Variable variable = new Variable();
                             if (type.equals("double")){
                                 Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
-                                variable.setValue(String.valueOf(dd));
+                                String cT = visit(ctx.expr(i)).getType();
+                                if (!cT.equals("double") && !cT.equals("int")){
+                                    
+                                } else {
+                                    variable.setValue(String.valueOf(dd));
+                                }
                             } else if  (type.equals("int")) {
                                 Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
                                 Integer in = dd.intValue();
@@ -113,6 +118,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                             Variable variable = new Variable();
                             if (type.equals("double")){
                                 Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
+
                                 variable.setValue(String.valueOf(dd));
                             } else if  (type.equals("int")) {
                                 Double dd = Double.valueOf(visit(ctx.expr(i)).getValue());
@@ -281,24 +287,26 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         }
         Variable value = visit(ctx.expr()); // compute value of expression on right
         Variable a = (Variable) currentScope.resolve(id);
-        try {
-            if (a.getType() != null) {
-                if (a.getType().equals("double")) {
-                    a.setValue(String.valueOf(Double.valueOf(value.getValue())));
-                } else if (a.getType().equals("int")) {
-                    a.setValue(String.valueOf(Double.valueOf(value.getValue()).intValue()));
-                } else if (a.getType().equals("char")) {
-                    a.setValue(value.getValue());
-                } else if (a.getType().equals("bool")) {
-                    a.setValue(value.getValue());
-                } else {
-                    a.setValue(String.valueOf(Double.valueOf(value.getValue())));
+        if (!hasError) {
+            try {
+                if (a.getType() != null) {
+                    if (a.getType().equals("double")) {
+                        a.setValue(String.valueOf(Double.valueOf(value.getValue())));
+                    } else if (a.getType().equals("int")) {
+                        a.setValue(String.valueOf(Double.valueOf(value.getValue()).intValue()));
+                    } else if (a.getType().equals("char")) {
+                        a.setValue(value.getValue());
+                    } else if (a.getType().equals("bool")) {
+                        a.setValue(value.getValue());
+                    } else {
+                        a.setValue(String.valueOf(Double.valueOf(value.getValue())));
+                    }
                 }
+            } catch (Exception e) {
+                System.out.println("Unknown value");
             }
-        } catch (Exception e) {
-            System.out.println("Unknown value");
+            a.setId(id);
         }
-        a.setId(id);
         return a;
     }
     @Override
@@ -489,49 +497,51 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitAddSub(HelloParser.AddSubContext ctx) {
         String resulta = new String(), resultm = new String();
         Variable var = new Variable();
-        String typeL = visit(ctx.expr(0)).getType();
-        String typeR = visit(ctx.expr(0)).getType();
-        if ((visit(ctx.expr(0)).getType().equals("double") || visit(ctx.expr(1)).getType().equals("double"))
-                && (visit(ctx.expr(1)).getType().equals("real")|| visit(ctx.expr(1)).getType().equals("real"))) {
-            Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
-            Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
-            resultm = String.valueOf(left - right);
-            resulta = String.valueOf(left + right);
-            var.setType("double");
-        } else if (visit(ctx.expr(0)).getType().equals("int") && visit(ctx.expr(1)).getType().equals("int")) {
-            Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
-            Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
-            Integer lt = left.intValue();
-            Integer rt = right.intValue();
-            resultm = String.valueOf(lt - rt);
-            resulta = String.valueOf(lt + rt);
-            var.setType("int");
-        } else if ((typeL.equals("double") && typeR.equals("int")) || (typeR.equals("double") && typeL.equals("int"))){
-            Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
-            Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
-            resultm = String.valueOf(left - right);
-            resulta = String.valueOf(left + right);
-            var.setType("double");
-        }else {
-            if ((visit(ctx.expr(0)).getType() != null &&  visit(ctx.expr(0)).getType().equals("char"))
-                    ||(visit(ctx.expr(1)).getType() != null &&  visit(ctx.expr(1)).getType().equals("char")) ) {
-                hasError = true;
-                CheckSymbol.error(ctx.expr(0).start, "Can not add char! " + ctx.getParent().getText());
-//                logError("Can not add char!" + ctx.getText());
+        if (!hasError){
+            String typeL = visit(ctx.expr(0)).getType();
+            String typeR = visit(ctx.expr(0)).getType();
+            if ((visit(ctx.expr(0)).getType().equals("double") || visit(ctx.expr(1)).getType().equals("double"))
+                    && (visit(ctx.expr(1)).getType().equals("real")|| visit(ctx.expr(1)).getType().equals("real"))) {
+                Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
+                Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
+                resultm = String.valueOf(left - right);
+                resulta = String.valueOf(left + right);
+                var.setType("double");
+            } else if (visit(ctx.expr(0)).getType().equals("int") && visit(ctx.expr(1)).getType().equals("int")) {
+                Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
+                Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
+                Integer lt = left.intValue();
+                Integer rt = right.intValue();
+                resultm = String.valueOf(lt - rt);
+                resulta = String.valueOf(lt + rt);
+                var.setType("int");
+            } else if ((typeL.equals("double") && typeR.equals("int")) || (typeR.equals("double") && typeL.equals("int"))){
+                Double left = Double.valueOf(visit(ctx.expr(0)).getValue()); // get value of left subexpression
+                Double right = Double.valueOf(visit(ctx.expr(1)).getValue()); // get value of right subexpression
+                resultm = String.valueOf(left - right);
+                resulta = String.valueOf(left + right);
+                var.setType("double");
+            }else {
+                if ((visit(ctx.expr(0)).getType() != null &&  visit(ctx.expr(0)).getType().equals("char"))
+                        ||(visit(ctx.expr(1)).getType() != null &&  visit(ctx.expr(1)).getType().equals("char")) ) {
+                    hasError = true;
+                    CheckSymbol.error(ctx.expr(0).start, "Can not add char! " + ctx.getParent().getText());
+    //                logError("Can not add char!" + ctx.getText());
+                }
+                if ((visit(ctx.expr(0)).getType() != null &&  visit(ctx.expr(0)).getType().equals("bool"))
+                        ||(visit(ctx.expr(1)).getType() != null &&  visit(ctx.expr(1)).getType().equals("char")) ) {
+                    hasError = true;
+                    CheckSymbol.error(ctx.expr(0).start, "Can not add char! " + ctx.getParent().getText());
+    //                logError("Can not add bool!" + ctx.getText());
+                }
             }
-            if ((visit(ctx.expr(0)).getType() != null &&  visit(ctx.expr(0)).getType().equals("bool"))
-                    ||(visit(ctx.expr(1)).getType() != null &&  visit(ctx.expr(1)).getType().equals("char")) ) {
-                hasError = true;
-                CheckSymbol.error(ctx.expr(0).start, "Can not add char! " + ctx.getParent().getText());
-//                logError("Can not add bool!" + ctx.getText());
+            if ( ctx.op.getText().equals("+")) {
+                var.setValue(String.valueOf(resulta));
+                var.setVarType("const");
+                return var;
             }
+            var.setValue(String.valueOf(resultm));
         }
-        if ( ctx.op.getText().equals("+")) {
-            var.setValue(String.valueOf(resulta));
-            var.setVarType("const");
-            return var;
-        }
-        var.setValue(String.valueOf(resultm));
         var.setVarType("const");
         return var;// must be SUB
     }
@@ -547,7 +557,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         Variable bool = new Variable();
         bool.setVarType("const");
         bool.setType("bool");
-        if (ctx.expr().size() == 1){
+        if (!hasError && ctx.expr().size() == 1){
             Variable result = visit(ctx.expr(0));
             if (result.getType() != null &&(result.getType().equals("double") || result.getType().equals("real"))
                     && !Double.valueOf(result.getValue()).equals(0)){
@@ -558,7 +568,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                     || result.getType().equals("bool")) && !result.getValue().equals("false")){
                 bool.setValue("true");
             } else bool.setValue("false");
-        } else {
+        } else if (!hasError) {
 //            System.out.println(ctx.expr(0).getText());
             Variable left = visit(ctx.expr(0));
             String lt = left.getType();
@@ -734,6 +744,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 }
                 if (result) bool.setValue("true");
                 else bool.setValue("false");
+            } else {
+
             }
         }
         return bool;
@@ -795,6 +807,23 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         return visitChildren(ctx);
     }
     @Override
+    public Variable visitString(HelloParser.StringContext ctx) {
+        ctx.getChildCount();
+        Variable var = new Variable();
+        String result = ctx.getChild(0).getText();
+        for (int i = 1; i < ctx.getChildCount()-1; i++){
+            if (ctx.getChild(i).getText().equals("\\")) {
+                result += ctx.getChild(i).getText();
+            } else {
+                result += ctx.getChild(i).getText() + " ";
+            }
+        }
+        var.setType("string");
+        var.setVarType("const");
+        var.setValue(result);
+        return var;
+    }
+    @Override
     public Variable visitWriteStmt(HelloParser.WriteStmtContext ctx) {
         Variable var = visit(ctx.getChild(2));
         if (!hasError){
@@ -802,10 +831,11 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             if (ctx.string() != null){
                 TextEditorDemo te = TextEditorDemo.getInstance();
                 RSyntaxTextArea ta = te.getOutputAre();
-                String s = ctx.string().getText();
+//                String s = ctx.string().getText();
+                String s = visit(ctx.string()).getValue();
                 s = s.substring(1, s.length()-1);
                 s = s.replace("\\n", "\n");
-                ta.append(s);
+                ta.append(s + "\n");
             }else if(var.getVarType()!= null && var.getVarType().equals("const")) {
                 String s = var.getValue();
                 if (var.getType() != null && var.getType().equals("char")){
@@ -813,7 +843,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 }
                 TextEditorDemo te = TextEditorDemo.getInstance();
                 RSyntaxTextArea ta = te.getOutputAre();
-                ta.append(s);
+                ta.append(s + "\n");
 
             } else {
                 TextEditorDemo te = TextEditorDemo.getInstance();
@@ -833,7 +863,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //                ta.append(": ");
     //            System.out.println(memory.get(var.getId()).getValue());
 //                System.out.println(s);
-                ta.append(s);
+                ta.append(s + "\n");
             }
         }
         return visitChildren(ctx);
@@ -873,6 +903,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             msg = "Input value for " + var.getId() + " :";
         }
         String t = "";
+
         if (!hasError)
             t = jp.showInputDialog(null, msg);
 
@@ -883,20 +914,47 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 
 //        var.setValue(t);
 //        System.out.println(var.getId());
+
         if (!hasError && var.getType() != null) {
             if (var.getType().equals("double")) {
-                var.setValue(String.valueOf(Double.valueOf(t)));
+                if (!isNum(t)) {
+                    hasError = true;
+                    CheckSymbol.error(ctx.start, "Input " + t + " must be double type! " + ctx.getText());
+                }else {
+                    var.setValue(String.valueOf(Double.valueOf(t)));
+                }
             } else if(var.getType().equals("int")) {
-                var.setValue(String.valueOf(Double.valueOf(t).intValue()));
+                if (!isInt(t)) {
+                    hasError = true;
+                    CheckSymbol.error(ctx.start, "Input " + t + " must be int type! " + ctx.getText());
+                }else {
+                    var.setValue(String.valueOf(Double.valueOf(t).intValue()));
+                }
             } else if(var.getType().equals("char")) {
-                var.setValue(t);
+                if (t.length() > 1) {
+                    hasError = true;
+                    CheckSymbol.error(ctx.start, "Input " + t + " must be char type! " + ctx.getText());
+                }else {
+                    var.setValue( "\'" + t + "\'");
+                }
             } else if(var.getType().equals("bool")) {
-                var.setValue(t);
+                if (!t.equals("true") && !t.equals("false")) {
+                    hasError = true;
+                    CheckSymbol.error(ctx.start, "Input " + t + " must be bool type! " + ctx.getText());
+                }else {
+                    var.setValue(t);
+                }
             } else {
                 var.setValue(String.valueOf(Double.valueOf(t)));
             }
         }
         TextEditorDemo.ri = "";
         return visitChildren(ctx);
+    }
+    public static boolean isNum(String str){
+        return str.matches("^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$");
+    }
+    public static boolean isInt(String str){
+        return str.matches("^[-+]?(([0-9]+)([.]([0]+))?|([.]([0]+))?)$");
     }
 }
