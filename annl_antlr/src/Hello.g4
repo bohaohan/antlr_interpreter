@@ -15,7 +15,7 @@ sub_var : (value) (Equal (expr |'{' (expr (Comma expr)*)? '}'))?;
 //Stmts : VarDecl | IfStmt| Arr_assign_stat | WhileStmt| ForStmt | BreakStmt | AssignStmt | ReadStmt | WriteStmt |
 //StmtBlock;
 stmtBlock : '{' ( stmts )* '}';
-Type : 'real'|'int'|'double'|'bool'|'char';
+Type : 'int'|'double'|'bool'|'char';
 ifStmt : IF '(' compare ')' stmtBlock ('elif' '(' compare ')' stmtBlock )* ( eLSE stmtBlock )*;
 //ifStmt : IF expr stmtBlock  ( eLSE stmtBlock )*;
 READ:'read';
@@ -69,7 +69,7 @@ DOUBLE : ('-'|'+')? NUM '.' NUM;
 fragment LETTER: [a-zA-Z];
 NEWLINE : '\r'? '\n' ;
 bool: 'true' | 'false';
-string : '\"' (.)? (('\\').)* '\"';
+string : '\"' (.)? (('\\')? ('\b')? .)* '\"';
 INT :  NUM;
 CHAR: '\'' (LETTER|NUM) '\'';
 SL_COMMENT :   '//' .*? (('\n')|EOF)  -> skip;
