@@ -858,7 +858,6 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitWhileStmt(HelloParser.WhileStmtContext ctx) {
         currentScope = new LocalScope(currentScope);
         saveScope(ctx, currentScope);
-        isBreak = false;
         Variable var = visit(ctx.compare());
         while (!isBreak && var.getValue().equals("true")){
             visit(ctx.stmtBlock());
@@ -872,7 +871,6 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitForStmt(HelloParser.ForStmtContext ctx) {
         currentScope = new LocalScope(currentScope);
         saveScope(ctx, currentScope);
-        isBreak = false;
         visit(ctx.getChild(1));
         Variable var = visit(ctx.compare());
         while (!isBreak && var.getValue().equals("true")){
