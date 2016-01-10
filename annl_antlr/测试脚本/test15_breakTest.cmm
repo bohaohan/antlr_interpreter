@@ -1,0 +1,17 @@
+// test break 
+int i = 10;
+while (i > 0) {
+	write(i);
+	if (i < 6) {
+		break;
+	}
+	i = i -1;
+}
+/*output
+10
+9
+8
+7
+6
+5
+*/

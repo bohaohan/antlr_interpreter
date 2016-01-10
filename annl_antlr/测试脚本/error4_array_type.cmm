@@ -1,0 +1,2 @@
+/* test assign array with different types */
+int I[] = {1, 2, 3, 'a'};

@@ -1,5 +1,16 @@
-if (true) {
-	int i = 1;
-	write(i);
+// test scope of variable
+int a = 0;
+if ( a == 0) {
+	int a = 1;
+	write("In the if a is");
+	write(a);
 }
-write(i);
+write("Out of the if a is");
+write(a);
+
+/*
+In the if a is
+1
+Out of the if a is
+0
+*/

@@ -1,4 +1,11 @@
+// test write with /n to change line
 bool a = true;
 if (a) {
-	write("this \n is \n a");
+	write("this \nis \na");
 }
+
+/*
+this 
+is 
+a
+*/
