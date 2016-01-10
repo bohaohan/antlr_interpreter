@@ -186,7 +186,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     @Override public Variable visitSub_var(HelloParser.Sub_varContext ctx) {
         String type = getValue(ctx.getParent());
         Variable var = new Variable();
-        if (ctx.getChildCount() == 1){
+        if (ctx.getChildCount() == 1 && !hasError ){
             String id = visit(ctx.value()).getId();
             if (visit(ctx.value()).getVarType() != null && visit(ctx.value()).getVarType().equals("array")) {
                 String d = ctx.value().getChild(0).getChild(0).getText();
@@ -230,7 +230,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 variable.setId(id);
                 currentScope.define(variable);
             }
-        } else  {
+        } else if (!hasError )  {
             String id = visit(ctx.value()).getId();
             if (visit(ctx.value()).getVarType() != null && visit(ctx.value()).getVarType().equals("array")) {
                 String d = ctx.value().getChild(0).getChild(0).getText();
@@ -282,14 +282,15 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitAssignStmt(HelloParser.AssignStmtContext ctx) {
 
         String id = visit(ctx.value()).getId();
-        if (!hasError && currentScope.resolve(id) == null){
+        Variable var = (Variable) currentScope.resolve(id);
+        if (!hasError&& !isBreak && currentScope.resolve(id) == null ||( var.getType()!=null &&var.getType().equals("arrayp"))){
             hasError = true;
             logError("Variable " + id + " does not exit! " + ctx.getText());
             return null;
         }
         Variable value = visit(ctx.expr()); // compute value of expression on right
         Variable a = (Variable) currentScope.resolve(id);
-        if (!hasError) {
+        if (!hasError&& !isBreak) {
             try {
                 String type = value.getType();
                 if (a.getType() != null) {
@@ -335,6 +336,15 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitArrayValue(HelloParser.ArrayValueContext ctx) {
         String varType = "array";
         Variable var = new Variable();
+        try {
+            if (!visit(ctx.expr()).getType().equals("int")) {
+                hasError = true;
+                CheckSymbol.error(ctx.start, "Array Index must be int! " + ctx.getText());
+                return null;
+            }
+        } catch (Exception e) {
+
+        }
         if (!hasError){
             var.setVarType(varType);
             String subId = ctx.getChild(0).getText();
@@ -453,7 +463,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitExpValue(HelloParser.ExpValueContext ctx) {
         String id = visit(ctx.value()).getId();
         if (!hasError){
-            if (currentScope.resolve(id) != null) {
+            Variable var = (Variable) currentScope.resolve(id);
+            if ((var.getType()!= null && !var.getType().equals("arrayp")) || currentScope.resolve(id) != null) {
                 return (Variable)currentScope.resolve(id);
             } else {
                 hasError = true;
@@ -897,7 +908,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     @Override
     public Variable visitWriteStmt(HelloParser.WriteStmtContext ctx) {
         Variable var = visit(ctx.getChild(2));
-        if (!hasError){
+        if (!hasError && !isBreak){
 //        System.out.print(var.getVarType());
             if (ctx.string() != null){
                 TextEditorDemo te = TextEditorDemo.getInstance();
@@ -984,7 +995,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         }
         String t = "";
 
-        if (!hasError)
+        if (!hasError && !isBreak)
 //            t = jp.showInputDialog(null, msg);
             t  = TextEditorDemo.ri;
 //        TextEditorDemo.waitI();
@@ -995,7 +1006,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //        var.setValue(t);
 //        System.out.println(var.getId());
 
-        if (!hasError && var.getType() != null) {
+        if (!hasError&& !isBreak && var.getType() != null) {
             if (var.getType().equals("double")) {
                 if (!isNum(t)) {
                     hasError = true;
