@@ -19,6 +19,7 @@ public class RefPhase extends HelloBaseListener{
     Scope currentScope;
     Stack<Symbol.Type> stack = new Stack<Symbol.Type>();
     ParseTreeProperty<Symbol.Type> types;
+    int forWhieTag = 0;
     boolean error = false;
 
     public RefPhase(GlobalScope globals, ParseTreeProperty<Scope> scopes, ParseTreeProperty<Symbol.Type> types) {
@@ -40,18 +41,22 @@ public class RefPhase extends HelloBaseListener{
     }
 
     public void enterWhileStmt(HelloParser.WhileStmtContext ctx) {
+        forWhieTag++;
         currentScope = scopes.get(ctx);
     }
 
     public void exitWhileStmt(HelloParser.WhileStmtContext ctx) {
+        forWhieTag--;
         currentScope = currentScope.getEnclosingScope();
     }
 
     public void enterForStmt(HelloParser.ForStmtContext ctx) {
+        forWhieTag++;
         currentScope = scopes.get(ctx);
     }
 
     public void exitForStmt(HelloParser.ForStmtContext ctx) {
+        forWhieTag--;
         currentScope = currentScope.getEnclosingScope();
     }
 
@@ -302,5 +307,12 @@ public class RefPhase extends HelloBaseListener{
         }
     }
 
+    public void exitBreakStmt(HelloParser.BreakStmtContext ctx) {
+        if (forWhieTag > 0) {
 
+        } else {
+            error = true;
+            CheckSymbol.error(ctx.start, "can not break in statement other than while and for");
+        }
+    }
 }
