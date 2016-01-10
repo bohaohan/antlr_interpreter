@@ -108,11 +108,40 @@ public interface HelloVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpValue(HelloParser.ExpValueContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link HelloParser#compare}.
+	 * Visit a parse tree produced by the {@code Or}
+	 * labeled alternative in {@link HelloParser#compare}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCompare(HelloParser.CompareContext ctx);
+	T visitOr(HelloParser.OrContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code And}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAnd(HelloParser.AndContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code notComp}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNotComp(HelloParser.NotCompContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code parensComp}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParensComp(HelloParser.ParensCompContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Comp}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComp(HelloParser.CompContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link HelloParser#whileStmt}.
 	 * @param ctx the parse tree

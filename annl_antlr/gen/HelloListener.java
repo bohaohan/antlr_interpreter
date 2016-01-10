@@ -173,15 +173,65 @@ public interface HelloListener extends ParseTreeListener {
 	 */
 	void exitExpValue(HelloParser.ExpValueContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link HelloParser#compare}.
+	 * Enter a parse tree produced by the {@code Or}
+	 * labeled alternative in {@link HelloParser#compare}.
 	 * @param ctx the parse tree
 	 */
-	void enterCompare(HelloParser.CompareContext ctx);
+	void enterOr(HelloParser.OrContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link HelloParser#compare}.
+	 * Exit a parse tree produced by the {@code Or}
+	 * labeled alternative in {@link HelloParser#compare}.
 	 * @param ctx the parse tree
 	 */
-	void exitCompare(HelloParser.CompareContext ctx);
+	void exitOr(HelloParser.OrContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code And}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void enterAnd(HelloParser.AndContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code And}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void exitAnd(HelloParser.AndContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code notComp}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void enterNotComp(HelloParser.NotCompContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code notComp}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void exitNotComp(HelloParser.NotCompContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code parensComp}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void enterParensComp(HelloParser.ParensCompContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code parensComp}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void exitParensComp(HelloParser.ParensCompContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Comp}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void enterComp(HelloParser.CompContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Comp}
+	 * labeled alternative in {@link HelloParser#compare}.
+	 * @param ctx the parse tree
+	 */
+	void exitComp(HelloParser.CompContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link HelloParser#whileStmt}.
 	 * @param ctx the parse tree
