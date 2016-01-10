@@ -144,7 +144,7 @@ public class RefPhase extends HelloBaseListener{
         return typeName;
     }
 
-    public void exitCompare(HelloParser.CompareContext ctx) {
+    public void exitComp(HelloParser.CompContext ctx) {
         HelloParser.ExprContext exprL = ctx.expr(0);
         HelloParser.ExprContext exprR;
         if (ctx.expr().size() > 1) {
