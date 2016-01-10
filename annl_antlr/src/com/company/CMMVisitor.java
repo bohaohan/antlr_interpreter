@@ -466,7 +466,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     /** expr op=('*'|'/') expr */
     @Override
     public Variable visitMulDiv(HelloParser.MulDivContext ctx) {
-        String resultm = "", resultd = new String();
+        String resultm = "", resultd = "", resultn = "";
         Variable var = new Variable();
         String lType = visit(ctx.expr(0)).getType();
         String rType = visit(ctx.expr(1)).getType();
@@ -480,8 +480,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 hasError = true;
                 CheckSymbol.error(ctx.start, "Can not divide by 0! " + ctx.getParent().getText());
                 resultd = null;
+                resultn = null;
             }else {
                 resultd = String.valueOf(left / right);
+                resultn = String.valueOf(left % right);
             }
             var.setType("double");
         } else if ((!hasError) && visit(ctx.expr(0)).getType().equals("int") && visit(ctx.expr(1)).getType().equals("int")) {
@@ -494,8 +496,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
                 hasError = true;
                 CheckSymbol.error(ctx.start, "Can not divide by 0! " + ctx.getParent().getText());
                 resultd = null;
+                resultn = null;
             }else {
                 resultd = String.valueOf(lt / rt);
+                resultn = String.valueOf(lt % rt);
             }
             var.setType("int");
         } else {
@@ -505,6 +509,10 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         if ( ctx.op.getText().equals("*") ){
             var.setVarType("const");
             var.setValue(String.valueOf(resultm));
+            return var;
+        } else if (ctx.op.getText().equals("%")) {
+            var.setVarType("const");
+            var.setValue(String.valueOf(resultn));
             return var;
         }
         var.setVarType("const");
@@ -572,6 +580,16 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     @Override
     public Variable visitParensComp(HelloParser.ParensCompContext ctx) {
         return visit(ctx.compare());
+    }
+
+    @Override public Variable visitNotComp(HelloParser.NotCompContext ctx) {
+        Variable var = visit(ctx.compare());
+        if (!hasError && var.getValue().equals("true")) {
+            var.setValue("false");
+        } else if (!hasError && var.getValue().equals("false")) {
+            var.setValue("true");
+        }
+        return var;
     }
 
     @Override
@@ -824,10 +842,12 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         currentScope = currentScope.getEnclosingScope();
         return new Variable();
     }
+
     @Override
     public Variable visitWhileStmt(HelloParser.WhileStmtContext ctx) {
         currentScope = new LocalScope(currentScope);
         saveScope(ctx, currentScope);
+        isBreak = false;
         Variable var = visit(ctx.compare());
         while (!isBreak && var.getValue().equals("true")){
             visit(ctx.stmtBlock());
@@ -841,7 +861,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitForStmt(HelloParser.ForStmtContext ctx) {
         currentScope = new LocalScope(currentScope);
         saveScope(ctx, currentScope);
-        visit(ctx.varDecl());
+        isBreak = false;
+        visit(ctx.getChild(1));
         Variable var = visit(ctx.compare());
         while (!isBreak && var.getValue().equals("true")){
             visit(ctx.stmtBlock());
@@ -954,8 +975,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
             logError("Variable " + v.getId() + " does not exit! " + ctx.getText());
         }
         JOptionPane jp = new JOptionPane();
-        ImageIcon icon = new ImageIcon("img/input.png");
-        jp.setIcon(icon);
+//        ImageIcon icon = new ImageIcon("img/input.png");
+//        jp.setIcon(icon);
         
         String msg = "Input value :";
         if (var != null && var.getId() != null) {

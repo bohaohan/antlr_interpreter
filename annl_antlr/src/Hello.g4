@@ -24,14 +24,8 @@ WHILE:'while';
 BREAK: 'break';
 FOR:'for';
 IF:'if';
-//expr :((('+'|'-')?value|('+'|'-')?eExpr) ( ( ('*'|'/'|'+'|'-'|'%')  (expr| ('(' expr ')') ))? ( Relation (expr| ('(' expr ')')) )? )
-//    | (('+'|'-')?value|('+'|'-')?eExpr) ( ('*'|'/'|'+'|'-'|'%') expr )* ( Relation expr  )?  )
-//
-//
-//    |('*'|'/'|'+'|'-'|'%') (expr| ('(' expr ')'))
-//    | (('(' expr ')') (  (Relation |  ('*'|'/'|'+'|'-'|'%'))(expr|('(' expr ')')))* )
-//    |(('+'|'-')?value|('+'|'-')?eExpr);
-expr: expr op=('*'|'/') expr # MulDiv
+
+expr: expr op=('*'|'/'|'%') expr # MulDiv
 | expr op=('+'|'-') expr # AddSub
 | ('-')?INT # int
 | ('-')?DOUBLE # double
@@ -40,12 +34,18 @@ expr: expr op=('*'|'/') expr # MulDiv
 | value # expValue
 | '(' expr ')' # parens
 ;
-compare: expr (Relation expr)?;
+
+compare: 'not' compare  # notComp
+|compare '||' compare # Or
+| compare '&&' compare # And
+| expr (Relation expr)? # Comp
+| '(' compare ')' # parensComp
+;
 
 //eExpr: (INT|CHAR| bool|DOUBLE|list_var);
 
 whileStmt : WHILE '(' compare ')' stmtBlock;
-forStmt : FOR '(' (assignStmt|varDecl) compare Semi assignStmt ')' stmtBlock;
+forStmt : FOR '(' ((assignStmt Semi)|varDecl| expr Semi) compare Semi assignStmt ')' stmtBlock;
 breakStmt : BREAK ';';
 readStmt : READ '(' expr ')' Semi;
 writeStmt : WRITE '(' (string|expr) ')' Semi;
@@ -67,9 +67,16 @@ Relation : '>'|'<'|'>='|'<='|'=='|'!='|'<>';
 fragment NUM: [0-9]+ ;
 DOUBLE : ('-'|'+')? NUM '.' NUM;
 fragment LETTER: [a-zA-Z];
+//charater : (LETTER|Operator|Relation)*;
 NEWLINE : '\r'? '\n' ;
 bool: 'true' | 'false';
-string : '\"' (.)? (('\\')? ('\b')? .)* '\"';
+//string : '\"' (. '\"')? (('\\')? ('\b')? (. ~'\"'))* '\"';
+//string : '"' ( ESC | . )*? '"' ;
+string : STRING ;
+//STRING: '\"' (.)? (('\\')? ('\b')? (.))* '\"';
+STRING : '"' (ESC|.)*? '"' ;
+fragment ESC : ('\"'|'\\' [btnr"\\]) ; // \b, \t, \n etc...
+
 INT :  NUM;
 CHAR: '\'' (LETTER|NUM) '\'';
 SL_COMMENT :   '//' .*? (('\n')|EOF)  -> skip;
