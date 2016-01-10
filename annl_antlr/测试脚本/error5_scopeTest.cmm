@@ -1,0 +1,6 @@
+/* test scope of variable*/
+if (true) {
+	int i = 1;
+	write(i);
+}
+write(i);

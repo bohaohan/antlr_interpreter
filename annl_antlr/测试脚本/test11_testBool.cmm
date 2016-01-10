@@ -1,3 +1,4 @@
+// test bool value and if
 bool a = true;
 if (a) {
 	write("a is true");
@@ -5,3 +6,8 @@ if (a) {
 		write("true is true");
 	}
 }
+
+/*
+a is true
+true is true
+*/

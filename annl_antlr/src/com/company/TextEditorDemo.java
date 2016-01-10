@@ -86,13 +86,28 @@ public class TextEditorDemo extends JFrame {
                 walker.walk(ref, tree);
                 if (ref.error) {
                     //停止
-                } else {
+                } else if (parser.getNumberOfSyntaxErrors() < 1) {
                     //继续visitor
 //                    CMMVisitor loader = new CMMVisitor();
 //                    loader.visit(tree);
-//                    Main main = new Main(stream);
+////                    Main main = new Main(stream);
+//                    if (main.isAlive()) {
+//                        main.stop();
+//                    }
+//                    if (main.isAlive()){
+//                        System.out.println("alive");
+//                        main.destroy();
+//                        main.start();
+//                    } else {
+//                        main.start();
+//                    }
+                    main = new Main();
                     main.setInput(tree);
-                    main.run();
+//                    if (main.isAlive()){
+//                        main.destroy();
+//                    }
+//                    main.destroy();
+                    main.start();
                 }
             }
 
@@ -125,6 +140,7 @@ public class TextEditorDemo extends JFrame {
         sp.setFoldIndicatorEnabled(true);
 
         RSyntaxTextArea textArea2 = new RSyntaxTextArea(15, 120);
+
         textArea2.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
         textArea2.setCodeFoldingEnabled(true);
         RTextScrollPane sp2 = new RTextScrollPane(textArea2);
@@ -143,20 +159,24 @@ public class TextEditorDemo extends JFrame {
 
             @Override
             public void keyPressed(KeyEvent e) {
-//                if (e.getKeyChar() != '\n'){
-//                    if (e.getKeyCode() == 8 && result.length() > 0) {
-//                        result = result.substring(0, result.length()-1);
-//                    }else {
-//                        result += e.getKeyChar();
-//                    }
-//                } else {
-//                    String re = result;
-//                    result = "";
-//                    TextEditorDemo.ri = re;
-////                    TextEditorDemo.main.setSuspend(false);
+                if (e.getKeyChar() != '\n'){
+                    if (e.getKeyCode() == 8 && result.length() > 0) {
+                        result = result.substring(0, result.length()-1);
+                    }else {
+                        result += e.getKeyChar();
+                    }
+                } else {
+                    if (result.length() > 0) {
+                        String re = result;
+                        result = "";
+                        TextEditorDemo.ri = re;
+                        TextEditorDemo.main.resume();
+                    } else {
+                        System.out.println("Please Input a value");
+                    }
 //                    CMMVisitor.wi.stop();
-////                    TextEditorDemo.main.notify();
-//                }
+//                    TextEditorDemo.main.notify();
+                }
             }
 
             @Override
