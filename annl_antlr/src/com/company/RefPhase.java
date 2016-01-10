@@ -163,7 +163,7 @@ public class RefPhase extends HelloBaseListener{
             }
         } else {
             if (exprL != null) {
-                if (types.get(exprL) == Symbol.Type.BOOL || types.get(exprL) == Symbol.Type.INT) {
+                if (types.get(exprL) == Symbol.Type.BOOL || types.get(exprL) == Symbol.Type.INT || types.get(exprL) == Symbol.Type.DOUBLE) {
                     // 类型符合
                 } else {
                     error = true;
