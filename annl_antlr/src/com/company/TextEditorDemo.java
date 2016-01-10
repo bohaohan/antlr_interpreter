@@ -166,10 +166,14 @@ public class TextEditorDemo extends JFrame {
                         result += e.getKeyChar();
                     }
                 } else {
-                    String re = result;
-                    result = "";
-                    TextEditorDemo.ri = re;
-                    TextEditorDemo.main.resume();
+                    if (result.length() > 0) {
+                        String re = result;
+                        result = "";
+                        TextEditorDemo.ri = re;
+                        TextEditorDemo.main.resume();
+                    } else {
+                        System.out.println("Please Input a value");
+                    }
 //                    CMMVisitor.wi.stop();
 //                    TextEditorDemo.main.notify();
                 }
