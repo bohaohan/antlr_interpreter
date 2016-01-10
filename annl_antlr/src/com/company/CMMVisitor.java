@@ -49,6 +49,7 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
     public Variable visitVarDecl(HelloParser.VarDeclContext ctx) {
         String type = ctx.getChild(0).getText();
         String id = visit(ctx.value()).getId(); // id is left-hand side of '='
+
         String value = null;
         try {
             Variable result = visit(ctx.expr(0)); // compute value of expression on right
@@ -893,6 +894,9 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
+
+        TextEditorDemo.main.suspend();
+
         Variable v = visit(ctx.getChild(2));
         Variable var = (Variable) currentScope.resolve(v.getId());
         if (!hasError && var == null){
@@ -910,8 +914,8 @@ public class CMMVisitor extends HelloBaseVisitor<Variable>{
         String t = "";
 
         if (!hasError)
-            t = jp.showInputDialog(null, msg);
-
+//            t = jp.showInputDialog(null, msg);
+            t  = TextEditorDemo.ri;
 //        TextEditorDemo.waitI();
 //        String t = TextEditorDemo.ri;
 
