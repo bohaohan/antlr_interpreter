@@ -17,7 +17,7 @@ public class DefPhase extends HelloBaseListener {
     ParseTreeProperty<Symbol.Type> types = new ParseTreeProperty<>();
     GlobalScope globals;
     Scope currentScope;
-    int forWhieTag = 0;
+
 
     void saveScope(ParserRuleContext ctx, Scope s) {
         scopes.put(ctx, s);
@@ -151,24 +151,20 @@ public class DefPhase extends HelloBaseListener {
 
 
     public void enterWhileStmt(HelloParser.WhileStmtContext ctx) {
-        forWhieTag++;
         currentScope = new LocalScope(currentScope);
         saveScope(ctx, currentScope);
     }
 
     public void exitWhileStmt(HelloParser.WhileStmtContext ctx) {
-        forWhieTag--;
         currentScope = currentScope.getEnclosingScope();
     }
 
     public void enterForStmt(HelloParser.ForStmtContext ctx) {
-        forWhieTag++;
         currentScope = new LocalScope(currentScope);
         saveScope(ctx, currentScope);
     }
 
     public void exitForStmt(HelloParser.ForStmtContext ctx) {
-        forWhieTag--;
         currentScope = currentScope.getEnclosingScope();
 
     }
@@ -302,13 +298,7 @@ public class DefPhase extends HelloBaseListener {
         }
     }
 
-    public void exitBreakStmt(HelloParser.BreakStmtContext ctx) {
-        if (forWhieTag > 0) {
 
-        } else {
-            CheckSymbol.error(ctx.start, "can not break in statement other than while and for");
-        }
-    }
 
 
 
